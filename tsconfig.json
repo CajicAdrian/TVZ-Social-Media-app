@@ -1,0 +1,30 @@
+{
+  "include": ["src", "types"],
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "baseUrl": "./",
+    "downlevelIteration":true,
+    /* paths - If you configure Snowpack import aliases, add them here. */
+    "paths": {
+      "components": ["./src/components"],
+      "pages":["./src/pages"],
+      "assets": ["./src/assets"],
+      "types":["./src/types/"],
+      "enums":["./src/types/enums"],
+      "utils":["./src/utils/"],
+      "api":["./src/api/"]
+    },
+    /* noEmit - Snowpack builds (emits) files, not tsc. */
+    "noEmit": true,
+    /* Additional Options */
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "importsNotUsedAsValues": "error"
+  }
+}
