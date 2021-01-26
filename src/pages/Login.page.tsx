@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text } from '@chakra-ui/react';
 
-export const StartPage = (): JSX.Element => {
+export const Login = (): JSX.Element => {
   return (
     <>
-      <Text as="h1">Start here</Text>
+      <Text as="h1">Login</Text>
     </>
   );
 };
