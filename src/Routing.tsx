@@ -3,7 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import { Navbar } from 'components';
 import { Grid } from '@chakra-ui/react';
 
-import { Home, Login, Profile, Register, Chat } from 'pages';
+import { Home, Login, Profile, Register, Chat, Feed } from 'pages';
 export const Routing = (): JSX.Element => {
   return (
     <Switch>
@@ -20,6 +20,7 @@ export const Routing = (): JSX.Element => {
           <Route exact path="/register" component={Register} />
           <Route exact path="/profile/:uuid" component={Profile} />
           <Route exact path="/chat" component={Chat} />
+          <Route exact path="/feed" component={Feed} />
         </Grid>
       </Grid>
     </Switch>

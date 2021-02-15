@@ -25,6 +25,7 @@ import {
   ChevronRightIcon,
 } from '@chakra-ui/icons';
 import { MdWbSunny } from 'react-icons/md';
+import { Link as RouterLink } from 'react-router-dom';
 
 export const Navbar = (): JSX.Element => {
   const { toggleColorMode, colorMode } = useColorMode();
@@ -92,7 +93,8 @@ export const Navbar = (): JSX.Element => {
           spacing={6}
         >
           <Button
-            as={'a'}
+            as={RouterLink}
+            to="/login"
             fontSize={'sm'}
             fontWeight={400}
             variant={'link'}
@@ -106,7 +108,8 @@ export const Navbar = (): JSX.Element => {
             fontWeight={600}
             color={'white'}
             bg={'pink.400'}
-            href={'#'}
+            as={RouterLink}
+            to="/register"
             _hover={{
               bg: 'pink.300',
             }}
