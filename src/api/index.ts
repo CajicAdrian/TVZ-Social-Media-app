@@ -2,3 +2,4 @@
 
 export { login } from './user-login.api';
 export { getPosts } from './get-posts.api';
+export { signup } from './signup.api';

@@ -29,7 +29,7 @@ export const Login = (): JSX.Element => {
   const onSubmit = async (data: FormData) => {
     if (data.username && data.password) {
       const { accessToken } = await login(data);
-      localStorage.setItem('accessToken', accessToken);
+      accessToken && localStorage.setItem('accessToken', accessToken);
       accessToken && history.push('/feed');
     }
   };
