@@ -28,7 +28,7 @@ export const Register = (): JSX.Element => {
     if (data.username && data.password) {
       const { accessToken } = await signup(data);
       accessToken && localStorage.setItem('accessToken', accessToken);
-      accessToken && history.push('/feed');
+      accessToken && history.push('/');
     }
   };
 

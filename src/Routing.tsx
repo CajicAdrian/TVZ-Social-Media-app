@@ -5,7 +5,7 @@ import { Grid } from '@chakra-ui/react';
 import { useAsync } from 'react-use';
 import { getPosts } from 'api';
 
-import { Home, Login, Profile, Register, Chat, Feed } from 'pages';
+import { Home, Login, Profile, Register, Feed } from 'pages';
 export const Routing = (): JSX.Element => {
   const token = localStorage.getItem('accessToken');
   const { loading, value } = useAsync(getPosts);
@@ -51,6 +51,9 @@ export const Routing = (): JSX.Element => {
               return token ? <Profile /> : <Redirect to="/login" />;
             }}
           />
+          <Route path="*">
+            <Redirect to="/" />
+          </Route>
         </Grid>
       </Grid>
     </Switch>

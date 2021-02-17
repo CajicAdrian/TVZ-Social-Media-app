@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
 const api = `http://localhost:3000/posts`;
 
@@ -17,11 +17,12 @@ interface Image {
 
 export const getPosts = async (): Promise<Post[]> => {
   const token = localStorage.getItem('accessToken');
+  const config: AxiosRequestConfig = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
 
   if (token) {
-    const { data } = await axios.post(api, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const { data } = await axios.get(api, config);
     return data;
   }
   return [];

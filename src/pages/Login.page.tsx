@@ -30,7 +30,7 @@ export const Login = (): JSX.Element => {
     if (data.username && data.password) {
       const { accessToken } = await login(data);
       accessToken && localStorage.setItem('accessToken', accessToken);
-      accessToken && history.push('/feed');
+      accessToken && history.push('/');
     }
   };
 
