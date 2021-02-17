@@ -12,8 +12,28 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
+import { useForm } from 'react-hook-form';
+import { login } from 'api';
+import { useHistory } from 'react-router-dom';
+
+interface FormData {
+  username: string;
+  password: string;
+}
 
 export const Login = (): JSX.Element => {
+  const { handleSubmit, register } = useForm({});
+
+  const history = useHistory();
+
+  const onSubmit = async (data: FormData) => {
+    if (data.username && data.password) {
+      const { accessToken } = await login(data);
+      localStorage.setItem('accessToken', accessToken);
+      accessToken && history.push('/feed');
+    }
+  };
+
   return (
     <Flex
       minH={'100vh'}
@@ -29,37 +49,44 @@ export const Login = (): JSX.Element => {
             to enjoy all of our cool <Link color={'blue.400'}>features</Link>
           </Text>
         </Stack>
-        <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
-          <Stack spacing={4}>
-            <FormControl id="email">
-              <FormLabel>Email address</FormLabel>
-              <Input type="email" />
-            </FormControl>
-            <FormControl id="password">
-              <FormLabel>Password</FormLabel>
-              <Input type="password" />
-            </FormControl>
-            <Stack spacing={10}>
-              <Stack
-                direction={{ base: 'column', sm: 'row' }}
-                align={'start'}
-                justify={'space-between'}
-              >
-                <Checkbox>Remember me</Checkbox>
-                <Link color={'blue.400'}>Forgot password?</Link>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
+            <Stack spacing={4}>
+              <FormControl id="username">
+                <FormLabel>Username</FormLabel>
+                <Input name="username" ref={register({ required: true })} />
+              </FormControl>
+              <FormControl id="password">
+                <FormLabel>Password</FormLabel>
+                <Input
+                  name="password"
+                  type="password"
+                  ref={register({ required: true })}
+                />
+              </FormControl>
+              <Stack spacing={10}>
+                <Stack
+                  direction={{ base: 'column', sm: 'row' }}
+                  align={'start'}
+                  justify={'space-between'}
+                >
+                  <Checkbox>Remember me</Checkbox>
+                  <Link color={'blue.400'}>Forgot password?</Link>
+                </Stack>
+                <Button
+                  type="submit"
+                  bg={'blue.400'}
+                  color={'white'}
+                  _hover={{
+                    bg: 'blue.500',
+                  }}
+                >
+                  Sign in
+                </Button>
               </Stack>
-              <Button
-                bg={'blue.400'}
-                color={'white'}
-                _hover={{
-                  bg: 'blue.500',
-                }}
-              >
-                Sign in
-              </Button>
             </Stack>
-          </Stack>
-        </Box>
+          </Box>
+        </form>
       </Stack>
     </Flex>
   );
