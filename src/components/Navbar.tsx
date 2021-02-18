@@ -3,7 +3,6 @@ import {
   Box,
   Flex,
   Text,
-  IconButton,
   Button,
   Stack,
   Collapse,
@@ -18,18 +17,14 @@ import {
   useColorMode,
   Container,
 } from '@chakra-ui/react';
-import {
-  HamburgerIcon,
-  CloseIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-} from '@chakra-ui/icons';
+import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { MdWbSunny } from 'react-icons/md';
 import { Link as RouterLink } from 'react-router-dom';
 
 export const Navbar = (): JSX.Element => {
   const { toggleColorMode, colorMode } = useColorMode();
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen } = useDisclosure();
+  const token = localStorage.getItem('accessToken');
 
   return (
     <Box>
@@ -45,20 +40,6 @@ export const Navbar = (): JSX.Element => {
         borderColor={useColorModeValue('gray.200', 'gray.900')}
         align={'center'}
       >
-        <Flex
-          flex={{ base: 1, md: 'auto' }}
-          ml={{ base: -2 }}
-          display={{ base: 'flex', md: 'none' }}
-        >
-          <IconButton
-            onClick={onToggle}
-            icon={
-              isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
-            }
-            variant={'ghost'}
-            aria-label={'Toggle Navigation'}
-          />
-        </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
           <Text
             textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
@@ -67,10 +48,6 @@ export const Navbar = (): JSX.Element => {
           >
             TBD
           </Text>
-
-          <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
-          </Flex>
         </Flex>
         <Box
           gridColumn="span 12"
@@ -86,37 +63,39 @@ export const Navbar = (): JSX.Element => {
             </Box>
           </Container>
         </Box>
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify={'flex-end'}
-          direction={'row'}
-          spacing={6}
-        >
-          <Button
-            as={RouterLink}
-            to="/login"
-            fontSize={'sm'}
-            fontWeight={400}
-            variant={'link'}
-            href={'#'}
+        {!token && (
+          <Stack
+            flex={{ base: 1, md: 0 }}
+            justify={'flex-end'}
+            direction={'row'}
+            spacing={6}
           >
-            Sign In
-          </Button>
-          <Button
-            display={{ base: 'none', md: 'inline-flex' }}
-            fontSize={'sm'}
-            fontWeight={600}
-            color={'white'}
-            bg={'pink.400'}
-            as={RouterLink}
-            to="/register"
-            _hover={{
-              bg: 'pink.300',
-            }}
-          >
-            Sign Up
-          </Button>
-        </Stack>
+            <Button
+              as={RouterLink}
+              to="/login"
+              fontSize={'sm'}
+              fontWeight={400}
+              variant={'link'}
+              href={'#'}
+            >
+              Sign In
+            </Button>
+            <Button
+              display={{ base: 'none', md: 'inline-flex' }}
+              fontSize={'sm'}
+              fontWeight={600}
+              color={'white'}
+              bg={'pink.400'}
+              as={RouterLink}
+              to="/register"
+              _hover={{
+                bg: 'pink.300',
+              }}
+            >
+              Sign Up
+            </Button>
+          </Stack>
+        )}
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
