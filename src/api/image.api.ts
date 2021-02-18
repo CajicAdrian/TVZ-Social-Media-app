@@ -8,9 +8,9 @@ interface Image {
   fileName: string;
 }
 
-export const uploadImage = async (image: File): Promise<Image> => {
+export const uploadImage = async (image: FileList): Promise<Image> => {
   const dataForm = new FormData();
-  dataForm.append('image', image);
+  dataForm.append('image', image[0]);
   const token = localStorage.getItem('accessToken');
   const config: AxiosRequestConfig = {
     headers: { Authorization: `Bearer ${token}` },

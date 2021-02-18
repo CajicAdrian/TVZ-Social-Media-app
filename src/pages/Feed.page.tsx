@@ -24,7 +24,7 @@ import { createPost, uploadImage } from 'api';
 interface FormData {
   title: string;
   description: string;
-  image: File;
+  image: FileList;
 }
 
 export const Feed = (): JSX.Element => {
@@ -36,14 +36,16 @@ export const Feed = (): JSX.Element => {
   const onSubmit = async (data: FormData) => {
     if (data.title && data.description && data.image) {
       const image = await uploadImage(data.image);
-      // createPost({
-      //   title: data.title,
-      //   description: data.description,
-      //   imageId: image.imageId,
-      // }).then(async () => {
-      //   await retry();
-      //   onClose();
-      // });
+      if (image) {
+        createPost({
+          title: data.title,
+          description: data.description,
+          imageId: image.imageId,
+        }).then(async () => {
+          await retry();
+          onClose();
+        });
+      }
     }
   };
 
