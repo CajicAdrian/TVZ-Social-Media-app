@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -10,6 +10,7 @@ import {
   Link,
   Stack,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { signup } from 'api';
@@ -23,12 +24,19 @@ interface FormData {
 export const Register = (): JSX.Element => {
   const { handleSubmit, register } = useForm({});
   const history = useHistory();
+  const [errors, setErrors] = useState<string[]>([]);
 
   const onSubmit = async (data: FormData) => {
     if (data.username && data.password) {
-      const { accessToken } = await signup(data);
-      accessToken && localStorage.setItem('accessToken', accessToken);
-      accessToken && history.push('/');
+      setErrors([]);
+
+      const result = await signup(data);
+      if (result.status === 'success') {
+        localStorage.setItem('accessToken', result.accessToken);
+        history.push('/');
+      } else {
+        setErrors(result.messages);
+      }
     }
   };
 
@@ -80,6 +88,15 @@ export const Register = (): JSX.Element => {
                 </Button>
               </Stack>
             </Stack>
+            {errors.length > 0 && (
+              <VStack mt="5">
+                {errors.map((err, idx) => (
+                  <Text key={idx} color="red.500">
+                    {err}
+                  </Text>
+                ))}
+              </VStack>
+            )}
           </Box>
         </form>
       </Stack>
