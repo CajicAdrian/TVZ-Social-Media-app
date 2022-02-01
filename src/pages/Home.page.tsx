@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Heading, Container, Text, Button, Stack } from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
 
 export const Home = (): JSX.Element => {
   return (
@@ -32,6 +33,8 @@ export const Home = (): JSX.Element => {
             position={'relative'}
           >
             <Button
+              as={RouterLink}
+              to='/register'
               colorScheme={'green'}
               bg={'green.400'}
               rounded={'full'}
