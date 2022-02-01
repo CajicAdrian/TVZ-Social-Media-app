@@ -34,7 +34,7 @@ export const Home = (): JSX.Element => {
           >
             <Button
               as={RouterLink}
-              to='/register'
+              to="/register"
               colorScheme={'green'}
               bg={'green.400'}
               rounded={'full'}

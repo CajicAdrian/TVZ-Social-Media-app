@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Box,
   Button,
@@ -15,6 +15,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { signup } from 'api';
 import { useHistory } from 'react-router-dom';
+import { AuthContext } from 'components';
 
 interface FormData {
   username: string;
@@ -24,6 +25,7 @@ interface FormData {
 export const Register = (): JSX.Element => {
   const { handleSubmit, register } = useForm({});
   const history = useHistory();
+  const { setAccessToken } = useContext(AuthContext);
   const [errors, setErrors] = useState<string[]>([]);
 
   const onSubmit = async (data: FormData) => {
@@ -32,7 +34,7 @@ export const Register = (): JSX.Element => {
 
       const result = await signup(data);
       if (result.status === 'success') {
-        localStorage.setItem('accessToken', result.accessToken);
+        setAccessToken(result.accessToken);
         history.push('/');
       } else {
         setErrors(result.messages);

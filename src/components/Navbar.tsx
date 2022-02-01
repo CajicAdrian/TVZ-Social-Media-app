@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Box,
   Flex,
@@ -20,11 +20,12 @@ import {
 import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { MdWbSunny } from 'react-icons/md';
 import { Link as RouterLink } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 
 export const Navbar = (): JSX.Element => {
   const { toggleColorMode, colorMode } = useColorMode();
   const { isOpen } = useDisclosure();
-  const token = localStorage.getItem('accessToken');
+  const { accessToken } = useContext(AuthContext);
 
   return (
     <Box>
@@ -63,7 +64,7 @@ export const Navbar = (): JSX.Element => {
             </Box>
           </Container>
         </Box>
-        {!token && (
+        {!accessToken && (
           <Stack
             flex={{ base: 1, md: 0 }}
             justify={'flex-end'}

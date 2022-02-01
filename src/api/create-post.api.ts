@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { useContext } from 'react';
+import { AuthContext } from 'components';
 
 const api = `http://localhost:3000/posts`;
 
@@ -11,13 +13,14 @@ interface CreatePostInterface {
 export const createPost = async (props: CreatePostInterface): Promise<void> => {
   const { description, imageId, title } = props;
   const dataForm = new URLSearchParams();
-  const token = localStorage.getItem('accessToken');
+  const { accessToken } = useContext(AuthContext);
+
   dataForm.append('title', title);
   dataForm.append('description', description);
   dataForm.append('imageId', `${imageId}`);
   const config: AxiosRequestConfig = {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
   };

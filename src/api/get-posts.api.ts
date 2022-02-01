@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { useContext } from 'react';
+import { AuthContext } from 'components';
 
 const api = `http://localhost:3000/posts`;
 
@@ -16,12 +18,13 @@ interface Image {
 }
 
 export const getPosts = async (): Promise<Post[]> => {
-  const token = localStorage.getItem('accessToken');
+  const { accessToken } = useContext(AuthContext);
+
   const config: AxiosRequestConfig = {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${accessToken}` },
   };
 
-  if (token) {
+  if (accessToken) {
     const { data } = await axios.get(api, config);
     return data;
   }

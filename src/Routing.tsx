@@ -1,17 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { Navbar } from 'components';
 import { Grid } from '@chakra-ui/react';
-import { useAsync } from 'react-use';
-import { getPosts } from 'api';
 
 import { Home, Login, Profile, Register, Feed } from 'pages';
+import { AuthContext } from './components/AuthContext';
 export const Routing = (): JSX.Element => {
-  const token = localStorage.getItem('accessToken');
-  const { loading, value } = useAsync(getPosts);
-  if (!value && !loading) {
-    localStorage.setItem('accessToken', '');
-  }
+  const { accessToken: token } = useContext(AuthContext);
 
   return (
     <Switch>
