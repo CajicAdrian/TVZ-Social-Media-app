@@ -1,7 +1,6 @@
 import axios from 'axios';
+import { api } from './api';
 import { login } from './user-login.api';
-
-const api = `http://localhost:3000/auth/signup`;
 
 interface SignupSuccess {
   status: 'success';
@@ -34,7 +33,7 @@ export const signup = async (input: FormData): Promise<SignupResult> => {
   };
 
   try {
-    await axios.post(api, params, config);
+    await api.post('/auth/signup', params, config);
     const { accessToken } = await login(input);
     return { status: 'success', accessToken };
   } catch (err) {

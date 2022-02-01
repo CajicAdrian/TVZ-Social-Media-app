@@ -1,8 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { useContext } from 'react';
-import { AuthContext } from 'components';
-
-const api = `http://localhost:3000/posts`;
+import { api } from './api';
 
 interface CreatePostInterface {
   imageId: number;
@@ -13,17 +9,14 @@ interface CreatePostInterface {
 export const createPost = async (props: CreatePostInterface): Promise<void> => {
   const { description, imageId, title } = props;
   const dataForm = new URLSearchParams();
-  const { accessToken } = useContext(AuthContext);
 
   dataForm.append('title', title);
   dataForm.append('description', description);
   dataForm.append('imageId', `${imageId}`);
-  const config: AxiosRequestConfig = {
+
+  api.post('/posts', dataForm, {
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-  };
-
-  axios.post(api, dataForm, config);
+  });
 };

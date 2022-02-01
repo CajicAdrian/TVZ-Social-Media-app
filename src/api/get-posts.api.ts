@@ -1,8 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { useContext } from 'react';
-import { AuthContext } from 'components';
-
-const api = `http://localhost:3000/posts`;
+import { api } from './api';
 
 interface Post {
   id: number;
@@ -18,15 +14,7 @@ interface Image {
 }
 
 export const getPosts = async (): Promise<Post[]> => {
-  const { accessToken } = useContext(AuthContext);
+  const { data } = await api.get('/posts');
 
-  const config: AxiosRequestConfig = {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  };
-
-  if (accessToken) {
-    const { data } = await axios.get(api, config);
-    return data;
-  }
-  return [];
+  return data;
 };

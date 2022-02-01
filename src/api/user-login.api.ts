@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const api = `http://localhost:3000/auth/signin`;
+import { api } from './api';
 
 interface Login {
   accessToken: string;
@@ -23,6 +21,6 @@ export const login = async (input: FormData): Promise<Login> => {
     },
   };
 
-  const { data } = await axios.post(api, params, config);
+  const { data } = await api.post('/auth/signin', params, config);
   return data;
 };

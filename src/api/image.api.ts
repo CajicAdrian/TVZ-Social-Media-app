@@ -1,8 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { useContext } from 'react';
-import { AuthContext } from 'components';
-
-const api = `http://localhost:3000/images/post-images`;
+import { api } from './api';
 
 interface Image {
   imageId: number;
@@ -13,12 +9,8 @@ interface Image {
 export const uploadImage = async (image: FileList): Promise<Image> => {
   const dataForm = new FormData();
   dataForm.append('image', image[0]);
-  const { accessToken } = useContext(AuthContext);
-  const config: AxiosRequestConfig = {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  };
 
-  const { data } = await axios.post(api, dataForm, config);
+  const { data } = await api.post('/images/post-images', dataForm);
   console.log(data);
   return data;
 };
