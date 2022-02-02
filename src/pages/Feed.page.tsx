@@ -28,7 +28,7 @@ interface FormData {
 }
 
 export const Feed = (): JSX.Element => {
-  const { handleSubmit, register } = useForm({});
+  const { handleSubmit, register } = useForm<FormData>({});
 
   const { loading, value = [], retry } = useAsyncRetry(getPosts);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,25 +64,22 @@ export const Feed = (): JSX.Element => {
                     <FormControl id="title">
                       <FormLabel>Title:</FormLabel>
                       <Input
-                        name="title"
                         type="text"
-                        ref={register({ required: true })}
+                        {...register('title', { required: true })}
                       />
                     </FormControl>
                     <FormControl id="description">
                       <FormLabel>Description:</FormLabel>
                       <Input
-                        name="description"
                         type="text"
-                        ref={register({ required: true })}
+                        {...register('description', { required: true })}
                       />
                     </FormControl>
                     <FormControl id="image">
                       <FormLabel>Image u want to upload:</FormLabel>
                       <Input
-                        name="image"
                         type="file"
-                        ref={register({ required: true })}
+                        {...register('image', { required: true })}
                       />
                     </FormControl>
                     <Stack spacing={10}>

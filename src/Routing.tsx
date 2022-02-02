@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Routes, Navigate, Route } from 'react-router-dom';
 import { Navbar } from 'components';
 import { Grid } from '@chakra-ui/react';
 
@@ -9,48 +9,31 @@ export const Routing = (): JSX.Element => {
   const { accessToken: token } = useContext(AuthContext);
 
   return (
-    <Switch>
-      <Grid templateColumns="repeat(12, 1fr)" w="100%">
-        <Navbar />
-        <Grid
-          templateColumns="repeat(12, 1fr)"
-          px="1rem"
-          w="100%"
-          gridColumn="span 12"
-        >
+    <Grid templateColumns="repeat(12, 1fr)" w="100%">
+      <Navbar />
+      <Grid
+        templateColumns="repeat(12, 1fr)"
+        px="1rem"
+        w="100%"
+        gridColumn="span 12"
+      >
+        <Routes>
+          <Route path="/" element={token ? <Feed /> : <Home />} />
           <Route
-            exact
-            path="/"
-            render={() => {
-              return token ? <Feed /> : <Home />;
-            }}
-          />
-          <Route
-            exact
             path="/login"
-            render={() => {
-              return token ? <Redirect to="/" /> : <Login />;
-            }}
+            element={token ? <Navigate to="/" /> : <Login />}
           />
           <Route
-            exact
             path="/register"
-            render={() => {
-              return token ? <Redirect to="/" /> : <Register />;
-            }}
+            element={token ? <Navigate to="/" /> : <Register />}
           />
           <Route
-            exact
             path="/profile/:uuid"
-            render={() => {
-              return token ? <Profile /> : <Redirect to="/login" />;
-            }}
+            element={token ? <Profile /> : <Navigate to="/login" />}
           />
-          <Route path="*">
-            <Redirect to="/" />
-          </Route>
-        </Grid>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </Grid>
-    </Switch>
+    </Grid>
   );
 };

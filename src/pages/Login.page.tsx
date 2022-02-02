@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { login } from 'api';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
   username: string;
@@ -22,15 +22,15 @@ interface FormData {
 }
 
 export const Login = (): JSX.Element => {
-  const { handleSubmit, register } = useForm({});
+  const { handleSubmit, register } = useForm<FormData>({});
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onSubmit = async (data: FormData) => {
     if (data.username && data.password) {
       const { accessToken } = await login(data);
       accessToken && localStorage.setItem('accessToken', accessToken);
-      accessToken && history.push('/');
+      accessToken && navigate('/');
     }
   };
 
@@ -54,14 +54,13 @@ export const Login = (): JSX.Element => {
             <Stack spacing={4}>
               <FormControl id="username">
                 <FormLabel>Username</FormLabel>
-                <Input name="username" ref={register({ required: true })} />
+                <Input {...register('username', { required: true })} />
               </FormControl>
               <FormControl id="password">
                 <FormLabel>Password</FormLabel>
                 <Input
-                  name="password"
                   type="password"
-                  ref={register({ required: true })}
+                  {...register('password', { required: true })}
                 />
               </FormControl>
               <Stack spacing={10}>

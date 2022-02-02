@@ -12,9 +12,9 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { signup } from 'api';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
 
 interface FormData {
@@ -23,19 +23,19 @@ interface FormData {
 }
 
 export const Register = (): JSX.Element => {
-  const { handleSubmit, register } = useForm({});
-  const history = useHistory();
+  const { handleSubmit, register } = useForm<FormData>({});
+  const navigate = useNavigate();
   const { setAccessToken } = useContext(AuthContext);
   const [errors, setErrors] = useState<string[]>([]);
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     if (data.username && data.password) {
       setErrors([]);
 
       const result = await signup(data);
       if (result.status === 'success') {
         setAccessToken(result.accessToken);
-        history.push('/');
+        navigate('/');
       } else {
         setErrors(result.messages);
       }
@@ -63,17 +63,15 @@ export const Register = (): JSX.Element => {
               <FormControl id="username">
                 <FormLabel>Username</FormLabel>
                 <Input
-                  name="username"
                   type="username"
-                  ref={register({ required: true })}
+                  {...register('username', { required: true })}
                 />
               </FormControl>
               <FormControl id="password">
                 <FormLabel>Password</FormLabel>
                 <Input
-                  name="password"
                   type="password"
-                  ref={register({ required: true })}
+                  {...register('password', { required: true })}
                 />
               </FormControl>
 
