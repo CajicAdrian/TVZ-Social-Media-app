@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { ReactElement, useCallback, useContext } from 'react';
 import {
   Box,
   Flex,
@@ -19,8 +19,30 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { MdWbSunny } from 'react-icons/md';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+
+export const LogoutButton = (): ReactElement => {
+  const { setAccessToken } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const logout = useCallback(() => {
+    setAccessToken('');
+    navigate('/');
+  }, [setAccessToken, navigate]);
+
+  return (
+    <Button
+      onClick={logout}
+      variant="ghost"
+      fontSize={'sm'}
+      fontWeight={600}
+      colorScheme="red"
+    >
+      Logout
+    </Button>
+  );
+};
 
 export const Navbar = (): JSX.Element => {
   const { toggleColorMode, colorMode } = useColorMode();
@@ -64,7 +86,9 @@ export const Navbar = (): JSX.Element => {
             </Box>
           </Container>
         </Box>
-        {!accessToken && (
+        {accessToken ? (
+          <LogoutButton />
+        ) : (
           <Stack
             flex={{ base: 1, md: 0 }}
             justify={'flex-end'}
