@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Box,
   Button,
@@ -15,6 +15,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { login } from 'api';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from 'components';
 
 interface FormData {
   username: string;
@@ -24,12 +25,13 @@ interface FormData {
 export const Login = (): JSX.Element => {
   const { handleSubmit, register } = useForm<FormData>({});
 
+  const { setAccessToken } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const onSubmit = async (data: FormData) => {
     if (data.username && data.password) {
       const { accessToken } = await login(data);
-      accessToken && localStorage.setItem('accessToken', accessToken);
+      accessToken && setAccessToken(accessToken);
       accessToken && navigate('/');
     }
   };
