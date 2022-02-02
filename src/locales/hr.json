@@ -1,0 +1,36 @@
+{
+    "global": {
+        "sign_in": "Prijava",
+        "sign_up": "Registracija",
+        "logout": "Odjava",
+        "username": "Korisničko ime",
+        "password": "Lozinka",
+        "language": "Jezik"
+    },
+    "home": {
+        "head1": "Podijeli sadržaj sa",
+        "head2": "svojim prijateljima",
+        "desc": "Podijeli svoje objave i slike s drugima.",
+        "register": "Registriraj se",
+        "learn_more": "Saznaj više"
+    },
+    "login": {
+        "head1": "Ulogiraj se u svoj račun",
+        "head2": "i uživaj u svim našim cool",
+        "features": "značajkama",
+        "remember_me": "Zapamti me",
+        "forgot_password": "Zaboravih lozinku?"
+    },
+    "register": {
+        "head1": "Registriraj novi račun",
+        "head2": "i uživaj u svim našim cool",
+        "features": "značajkama"
+    },
+    "feed": {
+        "create_new_post": "Kreiraj novu objavu",
+        "title": "Naslov",
+        "description": "Opis",
+        "image": "Slika",
+        "send": "Objavi!"
+    }
+}

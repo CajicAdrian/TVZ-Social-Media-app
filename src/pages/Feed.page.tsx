@@ -20,6 +20,7 @@ import { useAsyncRetry } from 'react-use';
 import { getPosts } from 'api';
 import { useForm } from 'react-hook-form';
 import { createPost, uploadImage } from 'api';
+import { useTranslation } from 'react-i18next';
 
 interface FormData {
   title: string;
@@ -28,6 +29,7 @@ interface FormData {
 }
 
 export const Feed = (): JSX.Element => {
+  const { t } = useTranslation('feed');
   const { handleSubmit, register } = useForm<FormData>({});
 
   const { loading, value = [], retry } = useAsyncRetry(getPosts);
@@ -52,7 +54,7 @@ export const Feed = (): JSX.Element => {
   return (
     <Box gridColumn="12 span">
       <VStack spacing="1rem" maxW={'80rem'} mx="auto">
-        <Button onClick={onOpen}>Create a new Post</Button>
+        <Button onClick={onOpen}>{t('create_new_post')}</Button>
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
@@ -62,21 +64,21 @@ export const Feed = (): JSX.Element => {
                 <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
                   <Stack spacing={4}>
                     <FormControl id="title">
-                      <FormLabel>Title:</FormLabel>
+                      <FormLabel>{t('title')}:</FormLabel>
                       <Input
                         type="text"
                         {...register('title', { required: true })}
                       />
                     </FormControl>
                     <FormControl id="description">
-                      <FormLabel>Description:</FormLabel>
+                      <FormLabel>{t('description')}:</FormLabel>
                       <Input
                         type="text"
                         {...register('description', { required: true })}
                       />
                     </FormControl>
                     <FormControl id="image">
-                      <FormLabel>Image u want to upload:</FormLabel>
+                      <FormLabel>{t('image')}:</FormLabel>
                       <Input
                         type="file"
                         {...register('image', { required: true })}
@@ -91,7 +93,7 @@ export const Feed = (): JSX.Element => {
                           bg: 'blue.500',
                         }}
                       >
-                        And send!
+                        {t('send')}
                       </Button>
                     </Stack>
                   </Stack>

@@ -16,13 +16,17 @@ import {
   useDisclosure,
   useColorMode,
   Container,
+  HStack,
 } from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { MdWbSunny } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+import { useTranslation } from 'react-i18next';
+import { LanguageMenu } from './LanguageMenu';
 
 export const LogoutButton = (): ReactElement => {
+  const { t } = useTranslation();
   const { setAccessToken } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -39,7 +43,7 @@ export const LogoutButton = (): ReactElement => {
       fontWeight={600}
       colorScheme="red"
     >
-      Logout
+      {t('logout')}
     </Button>
   );
 };
@@ -48,6 +52,7 @@ export const Navbar = (): JSX.Element => {
   const { toggleColorMode, colorMode } = useColorMode();
   const { isOpen } = useDisclosure();
   const { accessToken } = useContext(AuthContext);
+  const { t } = useTranslation();
 
   return (
     <Box>
@@ -72,54 +77,58 @@ export const Navbar = (): JSX.Element => {
             TBD
           </Text>
         </Flex>
-        <Box
-          gridColumn="span 12"
-          bg={colorMode === 'dark' ? 'gray.800' : 'white.100'}
-          px="5"
-          py="2"
-          d="flex"
-          alignItems="center"
-        >
-          <Container>
-            <Box>
-              <Icon as={MdWbSunny} cursor="pointer" onClick={toggleColorMode} />
-            </Box>
-          </Container>
-        </Box>
-        {accessToken ? (
-          <LogoutButton />
-        ) : (
-          <Stack
-            flex={{ base: 1, md: 0 }}
-            justify={'flex-end'}
-            direction={'row'}
-            spacing={6}
+        <HStack spacing="6">
+          <Box
+            gridColumn="span 12"
+            bg={colorMode === 'dark' ? 'gray.800' : 'white.100'}
+            px="5"
+            py="2"
+            d="flex"
+            alignItems="center"
           >
-            <Button
-              as={RouterLink}
-              to="/login"
-              fontSize={'sm'}
-              fontWeight={400}
-              variant={'link'}
-            >
-              Sign In
-            </Button>
-            <Button
-              display={{ base: 'none', md: 'inline-flex' }}
-              fontSize={'sm'}
-              fontWeight={600}
-              color={'white'}
-              bg={'pink.400'}
-              as={RouterLink}
-              to="/register"
-              _hover={{
-                bg: 'pink.300',
-              }}
-            >
-              Sign Up
-            </Button>
-          </Stack>
-        )}
+            <Container>
+              <Box>
+                <Icon
+                  as={MdWbSunny}
+                  cursor="pointer"
+                  onClick={toggleColorMode}
+                />
+              </Box>
+            </Container>
+          </Box>
+          <Box>
+            <LanguageMenu />
+          </Box>
+          {accessToken ? (
+            <LogoutButton />
+          ) : (
+            <>
+              <Button
+                as={RouterLink}
+                to="/login"
+                fontSize={'sm'}
+                fontWeight={400}
+                variant={'link'}
+              >
+                {t('sign_in')}
+              </Button>
+              <Button
+                display={{ base: 'none', md: 'inline-flex' }}
+                fontSize={'sm'}
+                fontWeight={600}
+                color={'white'}
+                bg={'pink.400'}
+                as={RouterLink}
+                to="/register"
+                _hover={{
+                  bg: 'pink.300',
+                }}
+              >
+                {t('sign_up')}
+              </Button>
+            </>
+          )}
+        </HStack>
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>

@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import { login } from 'api';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
+import { useTranslation } from 'react-i18next';
 
 interface FormData {
   username: string;
@@ -23,6 +24,7 @@ interface FormData {
 }
 
 export const Login = (): JSX.Element => {
+  const { t } = useTranslation('login');
   const { handleSubmit, register } = useForm<FormData>({});
 
   const { setAccessToken } = useContext(AuthContext);
@@ -46,20 +48,20 @@ export const Login = (): JSX.Element => {
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
-          <Heading fontSize={'4xl'}>Sign in to your account</Heading>
+          <Heading fontSize={'4xl'}>{t('head1')}</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool <Link color={'blue.400'}>features</Link>
+            {t('head2')} <Link color={'blue.400'}>{t('features')}</Link>
           </Text>
         </Stack>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
             <Stack spacing={4}>
               <FormControl id="username">
-                <FormLabel>Username</FormLabel>
+                <FormLabel>{t('username')}</FormLabel>
                 <Input {...register('username', { required: true })} />
               </FormControl>
               <FormControl id="password">
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t('password')}</FormLabel>
                 <Input
                   type="password"
                   {...register('password', { required: true })}
@@ -71,8 +73,8 @@ export const Login = (): JSX.Element => {
                   align={'start'}
                   justify={'space-between'}
                 >
-                  <Checkbox>Remember me</Checkbox>
-                  <Link color={'blue.400'}>Forgot password?</Link>
+                  <Checkbox>{t('remember_me')}</Checkbox>
+                  <Link color={'blue.400'}>{t('forgot_password')}</Link>
                 </Stack>
                 <Button
                   type="submit"
@@ -82,7 +84,7 @@ export const Login = (): JSX.Element => {
                     bg: 'blue.500',
                   }}
                 >
-                  Sign in
+                  {t('sign_in')}
                 </Button>
               </Stack>
             </Stack>

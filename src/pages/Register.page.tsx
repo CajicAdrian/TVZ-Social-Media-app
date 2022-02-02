@@ -16,6 +16,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { signup } from 'api';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
+import { useTranslation } from 'react-i18next';
 
 interface FormData {
   username: string;
@@ -23,6 +24,7 @@ interface FormData {
 }
 
 export const Register = (): JSX.Element => {
+  const { t } = useTranslation('register');
   const { handleSubmit, register } = useForm<FormData>({});
   const navigate = useNavigate();
   const { setAccessToken } = useContext(AuthContext);
@@ -52,23 +54,23 @@ export const Register = (): JSX.Element => {
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
-          <Heading fontSize={'4xl'}>Register a new account</Heading>
+          <Heading fontSize={'4xl'}>{t('head1')}</Heading>
           <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool <Link color={'blue.400'}>features</Link>
+            {t('head2')} <Link color={'blue.400'}>{t('features')}</Link>
           </Text>
         </Stack>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
             <Stack spacing={4}>
               <FormControl id="username">
-                <FormLabel>Username</FormLabel>
+                <FormLabel>{t('username')}</FormLabel>
                 <Input
                   type="username"
                   {...register('username', { required: true })}
                 />
               </FormControl>
               <FormControl id="password">
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t('password')}</FormLabel>
                 <Input
                   type="password"
                   {...register('password', { required: true })}
@@ -84,7 +86,7 @@ export const Register = (): JSX.Element => {
                     bg: 'blue.500',
                   }}
                 >
-                  Sign up
+                  {t('sign_up')}
                 </Button>
               </Stack>
             </Stack>

@@ -1,8 +1,11 @@
 import React from 'react';
 import { Box, Heading, Container, Text, Button, Stack } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const Home = (): JSX.Element => {
+  const { t } = useTranslation('home');
+
   return (
     <>
       <Container gridColumn="12 span" minW={'50vw'} maxW={'3:1'}>
@@ -17,14 +20,12 @@ export const Home = (): JSX.Element => {
             fontSize={{ base: '2xl', sm: '4xl', md: '6xl' }}
             lineHeight={'110%'}
           >
-            Share content with <br />
+            {t('head1')} <br />
             <Text as={'span'} color={'green.400'}>
-              your friends
+              {t('head2')}
             </Text>
           </Heading>
-          <Text color={'gray.500'}>
-            Share your posts and pictures with others.
-          </Text>
+          <Text color={'gray.500'}>{t('desc')}</Text>
           <Stack
             direction={'column'}
             spacing={3}
@@ -43,7 +44,7 @@ export const Home = (): JSX.Element => {
                 bg: 'green.500',
               }}
             >
-              Register
+              {t('register')}
             </Button>
             <Button variant={'link'} colorScheme={'blue'} size={'sm'}>
               Learn more
