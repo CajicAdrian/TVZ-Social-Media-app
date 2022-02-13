@@ -5,7 +5,9 @@
         "logout": "Logout",
         "username": "Username",
         "password": "Password",
-        "language": "Language"
+        "language": "Language",
+        "edit": "Edit",
+        "delete": "Delete"
     },
     "home": {
         "head1": "Share content with",

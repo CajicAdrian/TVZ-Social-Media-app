@@ -5,7 +5,9 @@
         "logout": "Odjava",
         "username": "Korisničko ime",
         "password": "Lozinka",
-        "language": "Jezik"
+        "language": "Jezik",
+        "edit": "Uredi",
+        "delete": "Obriši"
     },
     "home": {
         "head1": "Podijeli sadržaj sa",

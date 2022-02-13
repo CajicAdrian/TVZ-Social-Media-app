@@ -1,6 +1,6 @@
 import { api } from './api';
 
-interface Post {
+export interface ApiPost {
   id: number;
   title: string;
   description: string;
@@ -13,7 +13,7 @@ interface Image {
   fileName: string;
 }
 
-export const getPosts = async (): Promise<Post[]> => {
+export const getPosts = async (): Promise<ApiPost[]> => {
   const { data } = await api.get('/posts');
 
   return data;

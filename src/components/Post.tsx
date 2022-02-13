@@ -6,7 +6,9 @@ import {
   Stack,
   useColorModeValue,
   Image,
+  Button,
 } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 interface Image {
   imageId: number;
@@ -17,10 +19,17 @@ interface Props {
   image: Image;
   title: string;
   description: string;
+  onEdit?: () => void;
 }
 
-export function Post(props: Props): JSX.Element {
-  const { description, image, title } = props;
+export function Post({
+  description,
+  image,
+  title,
+  onEdit,
+}: Props): JSX.Element {
+  const { t } = useTranslation('feed');
+
   return (
     <Center py={6}>
       <Box
@@ -58,6 +67,7 @@ export function Post(props: Props): JSX.Element {
           </Text>
           <Text color={'gray.500'}>{description}</Text>
         </Stack>
+        {onEdit && <Button onClick={onEdit}>{t('edit')}</Button>}
       </Box>
     </Center>
   );
