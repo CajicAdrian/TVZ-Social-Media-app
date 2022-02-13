@@ -7,7 +7,8 @@
         "password": "Lozinka",
         "language": "Jezik",
         "edit": "Uredi",
-        "delete": "Obriši"
+        "delete": "Obriši",
+        "quote_of_day": "Citat dana"
     },
     "home": {
         "head1": "Podijeli sadržaj sa",
