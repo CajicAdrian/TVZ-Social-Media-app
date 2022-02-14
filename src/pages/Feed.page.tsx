@@ -109,6 +109,8 @@ export const Feed = (): JSX.Element => {
               description={post.description}
               image={post.images[0]}
               commentCount={post.commentCount}
+              likeCount={post.likeCount}
+              likedByCurrentUser={post.likedByCurrentUser}
               key={`key-post-${idx}`}
               onEdit={() => openEditModal(post)}
               onChange={retry}

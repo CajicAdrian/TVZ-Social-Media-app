@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Comments } from './Comments';
+import { Likes } from './Likes';
 
 interface Image {
   imageId: number;
@@ -23,6 +24,8 @@ interface Props {
   title: string;
   description: string;
   commentCount: number;
+  likedByCurrentUser: boolean;
+  likeCount: number;
   onEdit?: () => void;
   onChange: () => void;
 }
@@ -33,6 +36,8 @@ export function Post({
   image,
   title,
   commentCount,
+  likedByCurrentUser,
+  likeCount,
   onEdit,
   onChange,
 }: Props): JSX.Element {
@@ -66,7 +71,13 @@ export function Post({
           </Text>
           <Text color={'gray.500'}>{description}</Text>
         </Stack>
-        <Flex py="3" px="5" justifyContent="flex-end">
+        <Flex py="3" px="5" justifyContent="space-between">
+          <Likes
+            postId={postId}
+            likeCount={likeCount}
+            likedByCurrentUser={likedByCurrentUser}
+            onChange={onChange}
+          />
           {onEdit && <Button onClick={onEdit}>{t('edit')}</Button>}
         </Flex>
         <Comments

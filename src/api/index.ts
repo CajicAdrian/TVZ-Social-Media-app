@@ -12,3 +12,4 @@ export { updatePost } from './update-post.api';
 export { deletePost } from './delete-post.api';
 export { uploadImage } from './image.api';
 export { createComment } from './create-comment.api';
+export { toggleLike } from './toggle-like.api';
