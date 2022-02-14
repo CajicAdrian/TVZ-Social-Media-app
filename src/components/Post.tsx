@@ -7,8 +7,10 @@ import {
   useColorModeValue,
   Image,
   Button,
+  Flex,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
+import { Comments } from './Comments';
 
 interface Image {
   imageId: number;
@@ -16,46 +18,43 @@ interface Image {
   fileName: string;
 }
 interface Props {
+  postId: number;
   image: Image;
   title: string;
   description: string;
+  commentCount: number;
   onEdit?: () => void;
+  onChange: () => void;
 }
 
 export function Post({
+  postId,
   description,
   image,
   title,
+  commentCount,
   onEdit,
+  onChange,
 }: Props): JSX.Element {
   const { t } = useTranslation('feed');
 
   return (
-    <Center py={6}>
+    <Center py={6} w="full">
       <Box
         maxW={'40rem'}
         w={'full'}
         bg={useColorModeValue('white', 'gray.900')}
         boxShadow={'2xl'}
         rounded={'md'}
-        p={6}
         overflow={'hidden'}
       >
-        <Box
-          h={'210px'}
-          bg={'gray.100'}
-          mt={-6}
-          mx={-6}
-          mb={6}
-          pos={'relative'}
-        >
+        <Box bg={'gray.100'} mt={-6} mx={-6} mb={6} pos={'relative'}>
           <Image
-            h={'210px'}
             src={`http://localhost:3000/images/post-images/${image.fileName}`}
             layout={'fill'}
           />
         </Box>
-        <Stack>
+        <Stack py="2" px="6">
           <Text
             color={'green.500'}
             textTransform={'uppercase'}
@@ -67,7 +66,14 @@ export function Post({
           </Text>
           <Text color={'gray.500'}>{description}</Text>
         </Stack>
-        {onEdit && <Button onClick={onEdit}>{t('edit')}</Button>}
+        <Flex py="3" px="5" justifyContent="flex-end">
+          {onEdit && <Button onClick={onEdit}>{t('edit')}</Button>}
+        </Flex>
+        <Comments
+          postId={postId}
+          commentCount={commentCount}
+          onChange={onChange}
+        />
       </Box>
     </Center>
   );

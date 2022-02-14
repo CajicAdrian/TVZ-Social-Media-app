@@ -5,6 +5,7 @@ export interface ApiPost {
   title: string;
   description: string;
   images: Image[];
+  commentCount: number;
 }
 
 interface Image {

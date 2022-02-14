@@ -8,7 +8,9 @@
         "language": "Language",
         "edit": "Edit",
         "delete": "Delete",
-        "quote_of_day": "Quote of day"
+        "quote_of_day": "Quote of day",
+        "n_comments": "comments",
+        "action_comment": "Comment"
     },
     "home": {
         "head1": "Share content with",

@@ -8,7 +8,9 @@
         "language": "Jezik",
         "edit": "Uredi",
         "delete": "Obriši",
-        "quote_of_day": "Citat dana"
+        "quote_of_day": "Citat dana",
+        "n_comments": "komentara",
+        "action_comment": "Komentiraj"
     },
     "home": {
         "head1": "Podijeli sadržaj sa",

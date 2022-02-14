@@ -1,10 +1,9 @@
 import { Box, Button, Spinner, useDisclosure, VStack } from '@chakra-ui/react';
-import { createPost, deletePost, getPosts, updatePost, uploadImage } from 'api';
+import { api, createPost, deletePost, getPosts, updatePost, uploadImage, ApiPost } from 'api';
 import { Post, PostFormModal } from 'components';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
-import type { ApiPost } from 'src/api/get-posts.api';
 
 interface FormData {
   title: string;
@@ -35,6 +34,7 @@ export const Feed = (): JSX.Element => {
     }
   }, [edit]);
   const openEditModal = (post: ApiPost) => {
+    api.get(`/posts/${post.id}/comments`);
     setEdit({
       mode: 'edit',
       postId: post.id,
@@ -104,11 +104,14 @@ export const Feed = (): JSX.Element => {
         ) : (
           value.map((post, idx) => (
             <Post
+              postId={post.id}
               title={post.title}
               description={post.description}
               image={post.images[0]}
+              commentCount={post.commentCount}
               key={`key-post-${idx}`}
               onEdit={() => openEditModal(post)}
+              onChange={retry}
             />
           ))
         )}
