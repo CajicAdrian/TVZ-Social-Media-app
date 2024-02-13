@@ -1,0 +1,41 @@
+{
+    "global": {
+        "sign_in": "Inloggen",
+        "sign_up": "Registreren",
+        "logout": "Uitloggen",
+        "username": "Gebruikersnaam",
+        "password": "Wachtwoord",
+        "language": "Taal",
+        "edit": "Bewerken",
+        "delete": "Verwijderen",
+        "quote_of_day": "Quote van de dag",
+        "n_comments": "reacties",
+        "action_comment": "Reageren"
+    },
+    "home": {
+        "head1": "Deel inhoud met",
+        "head2": "je vrienden",
+        "desc": "Deel je berichten en foto's met anderen.",
+        "register": "Registreren",
+        "learn_more": "Meer informatie"
+    },
+    "login": {
+        "head1": "Log in op je account",
+        "head2": "om te genieten van al onze coole",
+        "features": "functies",
+        "remember_me": "Onthoud mij",
+        "forgot_password": "Wachtwoord vergeten?"
+    },
+    "register": {
+        "head1": "Registreer een nieuw account",
+        "head2": "om te genieten van al onze coole",
+        "features": "functies"
+    },
+    "feed": {
+        "create_new_post": "Maak een nieuw bericht",
+        "title": "Titel",
+        "description": "Omschrijving",
+        "image": "Afbeelding die je wilt uploaden",
+        "send": "En verstuur!"
+    }
+}
