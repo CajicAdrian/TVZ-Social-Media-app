@@ -13,6 +13,9 @@ import { MdLanguage } from 'react-icons/md';
 const langNames: Record<string, string> = {
   hr: 'Hrvatski',
   en: 'English',
+  de: 'Deutsch',
+  nl: 'Nederlands',
+  bg: 'български',
 };
 
 export const LanguageMenu = (): ReactElement => {
@@ -49,6 +52,9 @@ export const LanguageMenu = (): ReactElement => {
         >
           <MenuItemOption value="hr">{langNames.hr}</MenuItemOption>
           <MenuItemOption value="en">{langNames.en}</MenuItemOption>
+          <MenuItemOption value="de">{langNames.de}</MenuItemOption>
+          <MenuItemOption value="nl">{langNames.nl}</MenuItemOption>
+          <MenuItemOption value="bg">{langNames.bg}</MenuItemOption>
         </MenuOptionGroup>
       </MenuList>
     </Menu>
