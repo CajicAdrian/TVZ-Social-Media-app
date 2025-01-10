@@ -1,25 +1,26 @@
 import {
   Box,
-  Button,
-  Divider,
-  HStack,
-  IconButton,
+  Image,
+  Text,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Text,
-  Textarea,
   useDisclosure,
   VStack,
+  Divider,
+  HStack,
+  Textarea,
+  IconButton,
 } from '@chakra-ui/react';
-import React, { ChangeEvent, ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaPaperPlane } from 'react-icons/fa';
-import { createComment, ApiComment, getComments } from 'api';
+import CommentIcon from '../images/Comment.png'; // Import the comment bubble image
+import { createComment, getComments } from 'api';
 import { useAsync } from 'react-use';
+import { FaPaperPlane } from 'react-icons/fa';
 
 interface Props {
   postId: number;
@@ -29,10 +30,10 @@ interface Props {
 
 const CommentsContent = ({ postId, onChange }: Props) => {
   const { t } = useTranslation('feed');
-
   const { value: comments } = useAsync(() => getComments(postId), [postId]);
-  const [content, setContent] = useState('');
-  const handleContentChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
+  const [content, setContent] = React.useState('');
+
+  const handleContentChange = (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(ev.target.value);
   };
 
@@ -49,8 +50,16 @@ const CommentsContent = ({ postId, onChange }: Props) => {
     <>
       <VStack>
         {comments?.map((comment) => (
-          <Box key={comment.id} w="full" background="blue.50" p="2" rounded="md">
-            <Text as="span" color="gray.500">{comment.user}:</Text>
+          <Box
+            key={comment.id}
+            w="full"
+            background="blue.50"
+            p="2"
+            rounded="md"
+          >
+            <Text as="span" color="gray.500">
+              {comment.user}:
+            </Text>
             <br />
             {comment.content}
           </Box>
@@ -84,24 +93,40 @@ export const Comments = ({
   postId,
   onChange,
 }: Props): ReactElement => {
-  const { t } = useTranslation('feed');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
-      <Button
-        w="full"
-        variant="ghost"
-        roundedTop={0}
-        roundedBottom="md"
+      {/* Image displayed before triggering the modal */}
+      <Box
+        textAlign="center"
+        position="relative"
+        display="inline-block"
         onClick={onOpen}
+        cursor="pointer"
       >
-        {commentCount} {t('n_comments')}
-      </Button>
+        {/* Comment Bubble Image */}
+        <Image src={CommentIcon} alt="Comments" boxSize="48px" />
+
+        {/* Comment Count centered inside the bubble */}
+        <Text
+          position="absolute"
+          top="50%"
+          left="50%"
+          transform="translate(-50%, -50%)"
+          color="gray.700"
+          fontWeight="bold"
+          fontSize="md"
+        >
+          {commentCount}
+        </Text>
+      </Box>
+
+      {/* Modal that appears after clicking the image */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader />
+          <ModalHeader>Comments</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {isOpen && (

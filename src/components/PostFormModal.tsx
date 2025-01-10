@@ -39,7 +39,7 @@ interface Quote {
 interface QuoteOfDay {
   contents: {
     quotes: Quote[];
-  },
+  };
 }
 
 export const PostFormModal = ({
@@ -54,23 +54,11 @@ export const PostFormModal = ({
   const { handleSubmit, setValue, register } = useForm<FormData>({
     defaultValues: value,
   });
-  const [fetchingQod, setFetchingQod] = useState<boolean>(false);
-
-  const fetchQuoteOfDay = () => {
-    setFetchingQod(true);
-    axios.get<QuoteOfDay>('https://quotes.rest/qod').then((qod) => {
-      const quote = qod.data.contents.quotes[0];
-      setValue('title', `Quote by ${quote.author}`);
-      setValue('description', `Quote by ${quote.quote}`);
-      setFetchingQod(false);
-    });
-  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalCloseButton />
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
@@ -78,11 +66,6 @@ export const PostFormModal = ({
                 {mode === 'edit' && (
                   <Button colorScheme="red" size="sm" onClick={onDelete}>
                     {t('delete')}
-                  </Button>
-                )}
-                {mode === 'create' && (
-                  <Button size="sm" onClick={fetchQuoteOfDay} isLoading={fetchingQod}>
-                    {t('quote_of_day')}
                   </Button>
                 )}
                 <FormControl id="title">

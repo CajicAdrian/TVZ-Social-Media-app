@@ -1,22 +1,24 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
-  Box,
-  Button,
-  Checkbox,
   Flex,
+  Box,
+  VStack,
+  Heading,
   FormControl,
   FormLabel,
-  Heading,
   Input,
-  Link,
-  Stack,
+  Button,
   Text,
+  Container,
+  Link,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { login } from 'api';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
 import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
+import img from '../images/SignIn.png'; // Adjust the import path as necessary
 
 interface FormData {
   username: string;
@@ -26,71 +28,134 @@ interface FormData {
 export const Login = (): JSX.Element => {
   const { t } = useTranslation('login');
   const { handleSubmit, register } = useForm<FormData>({});
-
   const { setAccessToken } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [errors, setErrors] = useState<string[]>([]);
 
   const onSubmit = async (data: FormData) => {
     if (data.username && data.password) {
-      const { accessToken } = await login(data);
-      accessToken && setAccessToken(accessToken);
-      accessToken && navigate('/');
+      try {
+        const { accessToken } = await login(data);
+        if (accessToken) {
+          setAccessToken(accessToken);
+          navigate('/');
+        }
+      } catch (error) {
+        setErrors([t('login_failed', 'Login failed. Please try again.')]);
+      }
     }
   };
 
   return (
-    <Flex
-      minH={'100vh'}
-      minW={'100vw'}
-      align={'center'}
-      justify={'center'}
-      bg={'gray.50'}
-    >
-      <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Stack align={'center'}>
-          <Heading fontSize={'4xl'}>{t('head1')}</Heading>
-          <Text fontSize={'lg'} color={'gray.600'}>
-            {t('head2')} <Link color={'blue.400'}>{t('features')}</Link>
-          </Text>
-        </Stack>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
-            <Stack spacing={4}>
-              <FormControl id="username">
-                <FormLabel>{t('username')}</FormLabel>
-                <Input {...register('username', { required: true })} />
-              </FormControl>
-              <FormControl id="password">
-                <FormLabel>{t('password')}</FormLabel>
+    <Flex height="100vh" width="100vw">
+      {/* Left Image Section */}
+      <Box
+        position="absolute" /* Detach the background from layout */
+        top="-20" /* Start at the top of the viewport */
+        left="0" /* Align to the left */
+        width="50vw" /* Cover only the left half of the viewport */
+        height="calc(100vh + 20px)"
+        bgImage={`url(${img})`} /* Background image */
+        bgRepeat="no-repeat"
+        bgSize="cover"
+        bgPosition="center"
+        zIndex="-1" /* Keep it behind all content */
+      />
+
+      {/* Right Form Section */}
+      <Flex
+        width="50%" /* Restrict the form to the right half */
+        height="100vh" /* Match the viewport height */
+        ml="auto" /* Push the form to the right */
+        direction="column"
+        justify="center"
+        align="center"
+        p={8}
+      >
+        <Container>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <VStack
+              align="start"
+              spacing={8}
+              width="100%"
+              maxW="lg"
+              marginX="auto"
+            >
+              <Heading
+                as="h2"
+                fontSize="2xl"
+                mb={6}
+                fontFamily="'Karma', serif"
+              >
+                {t('welcome_back', 'Welcome back')}
+              </Heading>
+
+              <FormControl>
+                <FormLabel fontSize="md" fontFamily="'Assistant', sans-serif">
+                  {t('username', 'USERNAME')}
+                </FormLabel>
                 <Input
-                  type="password"
-                  {...register('password', { required: true })}
+                  type="text"
+                  {...register('username')}
+                  variant="unstyled"
+                  borderBottom="1px solid black"
+                  borderRadius="0"
+                  placeholder={t('username_placeholder', 'Enter your username')}
+                  fontFamily="'Assistant', sans-serif"
+                  fontSize="md"
                 />
               </FormControl>
-              <Stack spacing={10}>
-                <Stack
-                  direction={{ base: 'column', sm: 'row' }}
-                  align={'start'}
-                  justify={'space-between'}
-                >
-                  <Checkbox>{t('remember_me')}</Checkbox>
-                  <Link color={'blue.400'}>{t('forgot_password')}</Link>
-                </Stack>
-                <Button
-                  type="submit"
-                  bg={'blue.400'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}
-                >
-                  {t('sign_in')}
-                </Button>
-              </Stack>
-            </Stack>
-          </Box>
-        </form>
-      </Stack>
+
+              <FormControl>
+                <FormLabel fontSize="md" fontFamily="'Assistant', sans-serif">
+                  {t('password', 'PASSWORD')}
+                </FormLabel>
+                <Input
+                  type="password"
+                  {...register('password')}
+                  variant="unstyled"
+                  borderBottom="1px solid black"
+                  borderRadius="0"
+                  placeholder={t('password_placeholder', 'Enter your password')}
+                  fontFamily="'Assistant', sans-serif"
+                  fontSize="md"
+                />
+              </FormControl>
+
+              <Button
+                backgroundColor="#97C0E4"
+                size="md"
+                width="150px"
+                borderRadius="12px"
+                type="submit"
+              >
+                {t('signin_button', 'Log In')}
+              </Button>
+              {errors.length > 0 && (
+                <Text color="red.500" fontFamily="'Assistant', sans-serif">
+                  {errors.map((error, index) => (
+                    <div key={index}>{error}</div>
+                  ))}
+                </Text>
+              )}
+
+              {/* Don't have an account link */}
+              <Text
+                align="center"
+                width="150px"
+                fontSize="sm"
+                mt={4}
+                fontFamily="'Assistant', sans-serif"
+                color="#97C0E4"
+              >
+                <Link as={RouterLink} to="/register" color="#97C0E4">
+                  {t('no_account', "Don't have an account?")}
+                </Link>
+              </Text>
+            </VStack>
+          </form>
+        </Container>
+      </Flex>
     </Flex>
   );
 };

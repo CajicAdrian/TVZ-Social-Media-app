@@ -6,3 +6,4 @@ export { Register } from './Register.page';
 export { Profile } from './Profile.page';
 export { Chat } from './Chat.page';
 export { Feed } from './Feed.page';
+export { Settings } from './Settings.page';

@@ -1,22 +1,23 @@
 import React, { useContext, useState } from 'react';
 import {
-  Box,
-  Button,
   Flex,
+  Box,
+  VStack,
+  Heading,
   FormControl,
   FormLabel,
-  Heading,
   Input,
-  Link,
-  Stack,
+  Button,
   Text,
-  VStack,
+  Container,
 } from '@chakra-ui/react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { signup } from 'api';
+import { Link as RouterLink } from 'react-router-dom';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
-import { useTranslation } from 'react-i18next';
+import { signup } from 'api';
+import img from '../images/SignIn.png'; // Adjust the import path as necessary
 
 interface FormData {
   username: string;
@@ -33,7 +34,6 @@ export const Register = (): JSX.Element => {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     if (data.username && data.password) {
       setErrors([]);
-
       const result = await signup(data);
       if (result.status === 'success') {
         setAccessToken(result.accessToken);
@@ -45,63 +45,116 @@ export const Register = (): JSX.Element => {
   };
 
   return (
-    <Flex
-      minH={'100vh'}
-      minW={'100vw'}
-      align={'center'}
-      justify={'center'}
-      bg={'gray.50'}
-    >
-      <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Stack align={'center'}>
-          <Heading fontSize={'4xl'}>{t('head1')}</Heading>
-          <Text fontSize={'lg'} color={'gray.600'}>
-            {t('head2')} <Link color={'blue.400'}>{t('features')}</Link>
-          </Text>
-        </Stack>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
-            <Stack spacing={4}>
-              <FormControl id="username">
-                <FormLabel>{t('username')}</FormLabel>
+    <Flex height="100vh" width="100vw">
+      <Box
+        position="absolute" /* Detach the background from layout */
+        top="-20" /* Start at the top of the viewport */
+        left="0" /* Align to the left */
+        width="50vw" /* Cover only the left half of the viewport */
+        height="calc(100vh + 20px)"
+        bgImage={`url(${img})`} /* Background image */
+        bgRepeat="no-repeat"
+        bgSize="cover"
+        bgPosition="center"
+        zIndex="-1" /* Keep it behind all content */
+      />
+      <Flex
+        width="50%" /* Restrict the form to the right half */
+        height="100vh" /* Match the viewport height */
+        ml="auto" /* Push the form to the right */
+        direction="column"
+        justify="center"
+        align="center"
+        p={8}
+      >
+        <Container>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <VStack
+              align="start"
+              spacing={8} // Increased spacing between segments
+              width="100%"
+              maxW="lg"
+              marginX="auto"
+            >
+              <Heading
+                as="h2"
+                fontSize="2xl" // Adjust this as needed
+                mb={6}
+                fontFamily="'Karma', serif"
+              >
+                {t('create_account', 'Create your account')}
+              </Heading>
+
+              <FormControl>
+                <FormLabel
+                  fontSize="md" // Adjust this as needed
+                  fontFamily="'Assistant', sans-serif"
+                >
+                  {t('username', 'USERNAME')}:
+                </FormLabel>
                 <Input
                   type="username"
-                  {...register('username', { required: true })}
-                />
-              </FormControl>
-              <FormControl id="password">
-                <FormLabel>{t('password')}</FormLabel>
-                <Input
-                  type="password"
-                  {...register('password', { required: true })}
+                  {...register('username')}
+                  variant="unstyled"
+                  borderBottom="1px solid black"
+                  borderRadius={'0'}
+                  placeholder={t('username_placeholder', 'Enter your username')}
+                  fontFamily="'Assistant', sans-serif"
+                  fontSize="md" // Adjust this as needed
                 />
               </FormControl>
 
-              <Stack spacing={10}>
-                <Button
-                  type="submit"
-                  bg={'blue.400'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}
+              <FormControl>
+                <FormLabel
+                  fontSize="md"
+                  fontFamily="'Assistant', sans-serif" // Apply Assistant font
                 >
-                  {t('sign_up')}
-                </Button>
-              </Stack>
-            </Stack>
-            {errors.length > 0 && (
-              <VStack mt="5">
-                {errors.map((err, idx) => (
-                  <Text key={idx} color="red.500">
-                    {err}
-                  </Text>
-                ))}
-              </VStack>
-            )}
-          </Box>
-        </form>
-      </Stack>
+                  {t('password', 'PASSWORD')}:
+                </FormLabel>
+                <Input
+                  type="password"
+                  {...register('password')}
+                  variant="unstyled"
+                  borderBottom="1px solid black"
+                  borderRadius={'0'}
+                  placeholder={t('password_placeholder', 'Enter your password')}
+                  fontFamily="'Assistant', sans-serif" // Apply Assistant font to input
+                  fontSize="md" // Adjust this as needed
+                />
+              </FormControl>
+              <Button
+                backgroundColor="#97C0E4"
+                size="md"
+                width="150px"
+                borderRadius="12px"
+              >
+                {t('signup_button', 'Sign Up')}
+              </Button>
+              {errors.length > 0 && (
+                <Text color="red.500">
+                  {errors.map((error, index) => (
+                    <div key={index}>{t(error)}</div>
+                  ))}
+                </Text>
+              )}
+              <Text
+                align="center"
+                width="150px"
+                fontSize="sm"
+                mt={4}
+                fontFamily="'Assistant', sans-serif"
+                color="#97C0E4" // Match the color of the sign-in button
+              >
+                <RouterLink to="/login" style={{ color: '#97C0E4' }}>
+                  {' '}
+                  {/* Link to /register */}
+                  {t('already_have_account', 'Already have an account?')}
+                </RouterLink>
+              </Text>
+            </VStack>
+          </form>
+        </Container>
+      </Flex>
     </Flex>
   );
 };

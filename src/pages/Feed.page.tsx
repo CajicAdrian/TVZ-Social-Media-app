@@ -1,9 +1,18 @@
 import { Box, Button, Spinner, useDisclosure, VStack } from '@chakra-ui/react';
-import { api, createPost, deletePost, getPosts, updatePost, uploadImage, ApiPost } from 'api';
+import {
+  api,
+  createPost,
+  deletePost,
+  getPosts,
+  updatePost,
+  uploadImage,
+  ApiPost,
+} from 'api';
 import { Post, PostFormModal } from 'components';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
+import { Layout } from '../components/Layout'; // Import the reusable Layout component
 
 interface FormData {
   title: string;
@@ -26,6 +35,7 @@ export const Feed = (): JSX.Element => {
     setEdit({ mode: 'create' });
     onOpen();
   };
+
   useEffect(() => {
     if (edit) {
       onOpen();
@@ -33,6 +43,7 @@ export const Feed = (): JSX.Element => {
       onClose();
     }
   }, [edit]);
+
   const openEditModal = (post: ApiPost) => {
     api.get(`/posts/${post.id}/comments`);
     setEdit({
@@ -52,13 +63,13 @@ export const Feed = (): JSX.Element => {
   const onSubmit = async (data: FormData) => {
     if (edit?.mode === 'create') {
       if (!data.title || !data.description || !data.image) {
-        console.warn('Missing mandator fields to create');
+        console.warn('Missing mandatory fields to create');
         return;
       }
 
       const image = await uploadImage(data.image);
       if (!image) {
-        throw new Error('Faield to save image');
+        throw new Error('Failed to save image');
       }
 
       await createPost({
@@ -86,38 +97,52 @@ export const Feed = (): JSX.Element => {
   };
 
   return (
-    <Box gridColumn="12 span">
-      <VStack spacing="1rem" maxW={'80rem'} mx="auto">
-        <Button onClick={openCreateModal}>{t('create_new_post')}</Button>
-        {edit && (
-          <PostFormModal
-            mode={edit.mode}
-            isOpen={isOpen}
-            onClose={cancelEdit}
-            value={edit.mode === 'edit' ? edit.data : {}}
-            onSubmit={onSubmit}
-            onDelete={onDelete}
-          />
-        )}
-        {loading ? (
-          <Spinner />
-        ) : (
-          value.map((post, idx) => (
-            <Post
-              postId={post.id}
-              title={post.title}
-              description={post.description}
-              image={post.images[0]}
-              commentCount={post.commentCount}
-              likeCount={post.likeCount}
-              likedByCurrentUser={post.likedByCurrentUser}
-              key={`key-post-${idx}`}
-              onEdit={() => openEditModal(post)}
-              onChange={retry}
+    <Layout
+      leftContent={<Box />} // Leave the left section empty for now
+      rightContent={
+        <VStack spacing={6} align="stretch" w="100%">
+          {/* Center the Create New Post Button */}
+          <Box display="flex" justifyContent="center">
+            <Button onClick={openCreateModal} colorScheme="blue">
+              {t('create_new_post')}
+            </Button>
+          </Box>
+
+          {/* Post Form Modal */}
+          {edit && (
+            <PostFormModal
+              mode={edit.mode}
+              isOpen={isOpen}
+              onClose={cancelEdit}
+              value={edit.mode === 'edit' ? edit.data : {}}
+              onSubmit={onSubmit}
+              onDelete={onDelete}
             />
-          ))
-        )}
-      </VStack>
-    </Box>
+          )}
+
+          {/* Display Posts */}
+          {loading ? (
+            <Spinner alignSelf="center" />
+          ) : (
+            <VStack spacing="1rem">
+              {value.map((post, idx) => (
+                <Post
+                  postId={post.id}
+                  title={post.title}
+                  description={post.description}
+                  image={post.images[0]}
+                  commentCount={post.commentCount}
+                  likeCount={post.likeCount}
+                  likedByCurrentUser={post.likedByCurrentUser}
+                  key={`key-post-${idx}`}
+                  onEdit={() => openEditModal(post)}
+                  onChange={retry}
+                />
+              ))}
+            </VStack>
+          )}
+        </VStack>
+      }
+    />
   );
 };

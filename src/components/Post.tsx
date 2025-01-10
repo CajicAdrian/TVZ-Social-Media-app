@@ -2,25 +2,26 @@ import React from 'react';
 import {
   Box,
   Center,
+  Flex,
   Text,
-  Stack,
-  useColorModeValue,
+  Avatar,
   Image,
   Button,
-  Flex,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { Comments } from './Comments';
-import { Likes } from './Likes';
+import { Likes } from './Likes'; // Import the customized Likes component
+import { Comments } from './Comments'; // Import the customized Comments component
 
-interface Image {
+interface ImageProps {
   imageId: number;
   filePath: string;
   fileName: string;
 }
+
 interface Props {
   postId: number;
-  image: Image;
+  username: string;
+  image: ImageProps;
   title: string;
   description: string;
   commentCount: number;
@@ -32,6 +33,7 @@ interface Props {
 
 export function Post({
   postId,
+  username,
   description,
   image,
   title,
@@ -48,43 +50,71 @@ export function Post({
       <Box
         maxW={'40rem'}
         w={'full'}
-        bg={useColorModeValue('white', 'gray.900')}
+        bg={'white'}
         boxShadow={'2xl'}
         rounded={'md'}
         overflow={'hidden'}
+        position="relative"
       >
-        <Box bg={'gray.100'} mt={-6} mx={-6} mb={6} pos={'relative'}>
+        {/* User Info and Edit Button */}
+        <Flex align="center" p={4} justify="space-between">
+          <Flex align="center">
+            <Avatar
+              src="https://via.placeholder.com/150" // Replace with actual user avatar
+              size="md"
+              mr={4}
+            />
+            <Box>
+              <Text fontWeight="bold" fontSize="lg">
+                {username} - {title}
+              </Text>
+              <Text fontSize="sm" color="gray.500">
+                {description}
+              </Text>
+            </Box>
+          </Flex>
+          {onEdit && (
+            <Button onClick={onEdit} size="sm" variant="outline">
+              {t('edit')}
+            </Button>
+          )}
+        </Flex>
+
+        {/* Image Section */}
+        <Box bg={'gray.100'} mx={-6} mb={6} pos={'relative'}>
           <Image
             src={`http://localhost:3000/images/post-images/${image.fileName}`}
-            layout={'fill'}
+            alt="Post image"
+            objectFit="cover"
+            w="full"
           />
-        </Box>
-        <Stack py="2" px="6">
-          <Text
-            color={'green.500'}
-            textTransform={'uppercase'}
-            fontWeight={800}
-            fontSize={'sm'}
-            letterSpacing={1.1}
+
+          {/* Likes Component positioned over the image */}
+          <Box
+            palign="center"
+            position="absolute"
+            bottom="-60px" // Moved down by increasing the negative value
+            left="50%"
+            transform="translateX(-50%)"
+            zIndex={10}
           >
-            {title}
-          </Text>
-          <Text color={'gray.500'}>{description}</Text>
-        </Stack>
-        <Flex py="3" px="5" justifyContent="space-between">
-          <Likes
+            <Likes
+              postId={postId}
+              likeCount={likeCount}
+              likedByCurrentUser={likedByCurrentUser}
+              onChange={onChange}
+            />
+          </Box>
+        </Box>
+
+        {/* Comments Section aligned to the left */}
+        <Flex justifyContent="flex-start" alignItems="center" mb={4} px={6}>
+          <Comments
             postId={postId}
-            likeCount={likeCount}
-            likedByCurrentUser={likedByCurrentUser}
+            commentCount={commentCount}
             onChange={onChange}
           />
-          {onEdit && <Button onClick={onEdit}>{t('edit')}</Button>}
         </Flex>
-        <Comments
-          postId={postId}
-          commentCount={commentCount}
-          onChange={onChange}
-        />
       </Box>
     </Center>
   );

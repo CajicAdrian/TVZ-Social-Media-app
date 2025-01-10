@@ -1,21 +1,26 @@
 import React, { useContext } from 'react';
-import { Routes, Navigate, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from 'components';
-import { Grid } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 
-import { Home, Login, Profile, Register, Feed } from 'pages';
+import { Home, Login, Profile, Register, Feed, Settings } from 'pages';
 import { AuthContext } from './components/AuthContext';
+
 export const Routing = (): JSX.Element => {
   const { accessToken: token } = useContext(AuthContext);
 
   return (
-    <Grid templateColumns="repeat(12, 1fr)" w="100%">
+    <Box w="100vw" h="100vh" position="relative">
+      {/* Navbar */}
       <Navbar />
-      <Grid
-        templateColumns="repeat(12, 1fr)"
-        px="1rem"
+
+      {/* Main Content */}
+      <Box
+        as="main"
+        mt="60px" /* Push content below the Navbar */
         w="100%"
-        gridColumn="span 12"
+        h="calc(100vh - 60px)" /* Remaining space below Navbar */
+        overflow="auto" /* Ensure scrolling if needed */
       >
         <Routes>
           <Route path="/" element={token ? <Feed /> : <Home />} />
@@ -28,12 +33,16 @@ export const Routing = (): JSX.Element => {
             element={token ? <Navigate to="/" /> : <Register />}
           />
           <Route
-            path="/profile/:uuid"
+            path="/profile"
             element={token ? <Profile /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/settings"
+            element={token ? <Settings /> : <Navigate to="/login" />}
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 };
