@@ -18,8 +18,13 @@ interface Image {
   posts: string;
 }
 
-export const getPosts = async (): Promise<ApiPost[]> => {
-  const { data } = await api.get('/posts');
-
-  return data;
+export const getPostsByUser = async (userId: number): Promise<ApiPost[]> => {
+  try {
+    const { data } = await api.get(`/posts/user/${userId}`);
+    console.log('Fetched Posts by User:', data); // Log the response
+    return data;
+  } catch (error) {
+    console.error('Error in getPostsByUser:', error);
+    throw error;
+  }
 };

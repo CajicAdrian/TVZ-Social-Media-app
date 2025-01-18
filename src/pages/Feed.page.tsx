@@ -130,7 +130,8 @@ export const Feed = (): JSX.Element => {
                   postId={post.id}
                   title={post.title}
                   description={post.description}
-                  image={post.images[0]}
+                  image={post.images?.[0]}
+                  username={post.username}
                   commentCount={post.commentCount}
                   likeCount={post.likeCount}
                   likedByCurrentUser={post.likedByCurrentUser}

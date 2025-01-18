@@ -2,6 +2,11 @@ import { api } from './api';
 
 interface Login {
   accessToken: string;
+  user: {
+    id: number;
+    username: string;
+    bio?: string;
+  };
 }
 interface FormData {
   username: string;

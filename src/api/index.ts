@@ -4,6 +4,7 @@ export { api } from './api';
 export { login } from './user-login.api';
 export { getPosts } from './get-posts.api';
 export type { ApiPost } from './get-posts.api';
+export { getPostsByUser } from './get-posts-by-user.api';
 export { getComments } from './get-comments.api';
 export type { ApiComment } from './get-comments.api';
 export { signup } from './signup.api';

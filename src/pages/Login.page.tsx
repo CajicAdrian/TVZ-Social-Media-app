@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
-import img from '../images/SignIn.png'; // Adjust the import path as necessary
+import img from '../images/SignIn.png';
 
 interface FormData {
   username: string;
@@ -28,21 +28,24 @@ interface FormData {
 export const Login = (): JSX.Element => {
   const { t } = useTranslation('login');
   const { handleSubmit, register } = useForm<FormData>({});
-  const { setAccessToken } = useContext(AuthContext);
+  const { setAccessToken, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [errors, setErrors] = useState<string[]>([]);
 
   const onSubmit = async (data: FormData) => {
     if (data.username && data.password) {
       try {
-        const { accessToken } = await login(data);
-        if (accessToken) {
-          setAccessToken(accessToken);
-          navigate('/');
-        }
+        const { accessToken, user } = await login(data);
+        console.log('API Response:', { accessToken, user }); // Log API response
+        setAccessToken(accessToken);
+        setUser(user);
+        navigate('/');
       } catch (error) {
+        console.error('Login failed:', error);
         setErrors([t('login_failed', 'Login failed. Please try again.')]);
       }
+    } else {
+      setErrors([t('missing_fields', 'Please fill in all required fields.')]);
     }
   };
 

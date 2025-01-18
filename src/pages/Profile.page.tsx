@@ -1,78 +1,69 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { VStack, Spinner, Text, Box } from '@chakra-ui/react';
 import { AuthContext } from '../components/AuthContext';
-import { Layout } from '../components/Layout'; // Import the reusable layout
+import { Layout } from '../components/Layout';
 import { Post } from '../components/Post';
-import { api } from '../api';
+import { useAsyncRetry } from 'react-use';
+import { getPostsByUser } from 'api';
 
 export const Profile = (): JSX.Element => {
-  const { user } = useContext(AuthContext); // Access user from context
-  const [posts, setPosts] = useState([]); // State for user's posts
-  const [loading, setLoading] = useState(true); // Loading state
+  const { user } = useContext(AuthContext); // Fetch the logged-in user
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUserPosts = async () => {
-      try {
-        const response = await api.get(`/posts`);
-        setPosts(response.data); // Replace with user-specific posts later
-      } catch (error) {
-        console.error('Error fetching user posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserPosts();
-  }, []);
+  const {
+    loading,
+    value: posts = [],
+    retry,
+  } = useAsyncRetry(async () => {
+    if (!user?.id) {
+      throw new Error('User ID is not available');
+    }
+    try {
+      return await getPostsByUser(user.id); // Fetch posts by user ID
+    } catch (err) {
+      setError('Failed to fetch posts');
+      throw err;
+    }
+  });
 
   return (
     <Layout
       leftContent={
-        <>
-          <Box
-            borderRadius="full"
-            overflow="hidden"
-            w="100px"
-            h="100px"
-            bg="gray.300"
-            mb="4"
-            mx="auto"
-          >
-            <img
-              src={user?.profilePicture || 'https://via.placeholder.com/100'}
-              alt={`${user?.username || 'User'}'s avatar`}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          </Box>
-          <Text textAlign="center" fontWeight="bold" fontSize="xl">
-            {user?.username || 'Guest User'}
+        <Box>
+          <Text fontSize="2xl" fontWeight="bold">
+            {user?.username}'s Profile
           </Text>
-          <Text textAlign="center" fontSize="sm" color="gray.200">
-            {user?.email || 'No email provided'}
-          </Text>
-          <Text mt="4" textAlign="center">
-            {user?.aboutMe || 'No bio available.'}
-          </Text>
-        </>
+          <Text>{user?.bio || 'No bio available'}</Text>
+        </Box>
       }
       rightContent={
-        <VStack spacing="4" align="stretch">
-          {loading ? (
-            <Spinner />
-          ) : posts.length > 0 ? (
-            posts.map((post) => (
-              <Post
-                key={post.id}
-                postId={post.id}
-                title={post.title}
-                description={post.description}
-                image={post.image || 'https://via.placeholder.com/300'} // Fallback for missing images
-                likeCount={post.likeCount}
-                commentCount={post.commentCount}
-              />
-            ))
-          ) : (
-            <Text>No posts available.</Text>
+        <VStack spacing={6} align="stretch" w="100%">
+          {loading && <Spinner alignSelf="center" />}
+          {error && (
+            <Text color="red.500" alignSelf="center">
+              {error}
+            </Text>
+          )}
+          {!loading && !error && posts.length === 0 && (
+            <Text alignSelf="center">No posts available</Text>
+          )}
+          {!loading && !error && (
+            <VStack spacing="1rem">
+              {posts.map((post) => (
+                <Post
+                  key={post.id}
+                  postId={post.id}
+                  title={post.title}
+                  description={post.description}
+                  image={post.images[0]}
+                  username={post.username}
+                  commentCount={post.commentCount}
+                  likeCount={post.likeCount}
+                  likedByCurrentUser={post.likedByCurrentUser}
+                  onChange={retry}
+                />
+              ))}
+            </VStack>
           )}
         </VStack>
       }
