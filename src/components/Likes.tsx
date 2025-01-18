@@ -30,7 +30,17 @@ export const Likes = ({
       cursor="pointer"
     >
       {/* Heart Image */}
-      <Image src={LikeIcon} alt="Like" boxSize={20} />
+      <Image
+        src={LikeIcon}
+        alt="Like"
+        boxSize={20}
+        style={{
+          filter: likedByCurrentUser
+            ? 'invert(44%) sepia(93%) saturate(6536%) hue-rotate(10deg) brightness(80%) contrast(129%)' // Dark red
+            : 'invert(0%) brightness(0%)', // Black
+          transition: 'filter 0.3s ease', // Smooth transition
+        }}
+      />
 
       {/* Like Count centered inside the heart */}
       <Text
@@ -38,7 +48,7 @@ export const Likes = ({
         top="50%"
         left="50%"
         transform="translate(-50%, -50%)"
-        color="gray.700"
+        color={likedByCurrentUser ? 'gray.700' : 'white'}
         fontWeight="bold"
         fontSize="md"
       >
