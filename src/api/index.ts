@@ -14,3 +14,6 @@ export { deletePost } from './delete-post.api';
 export { uploadImage } from './image.api';
 export { createComment } from './create-comment.api';
 export { toggleLike } from './toggle-like.api';
+export type { Notification } from './get-notifications.api';
+export { getNotifications } from './get-notifications.api';
+export { markNotificationAsRead } from './mark-as-read.api';

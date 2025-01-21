@@ -16,6 +16,7 @@ import { MdWbSunny } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { useTranslation } from 'react-i18next';
+import { Notifications } from './Notifications';
 
 export const LogoutButton = (): ReactElement => {
   const { t } = useTranslation();
@@ -73,7 +74,7 @@ export const Navbar = (): JSX.Element => {
             {t('TBD')}
           </Button>
         </Flex>
-
+        <Notifications />
         <Box bg={colorMode === 'dark' ? 'gray.800' : 'white.100'} px="5" py="2">
           <Container display="flex" alignItems="center">
             {/* User Profile Picture Placeholder */}
