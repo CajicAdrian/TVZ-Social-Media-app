@@ -12,7 +12,7 @@ import {
   HStack,
   Image,
 } from '@chakra-ui/react';
-import { MdWbSunny } from 'react-icons/md';
+import { MdSettings } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -74,10 +74,17 @@ export const Navbar = (): JSX.Element => {
             {t('TBD')}
           </Button>
         </Flex>
-        <Notifications />
-        <Box bg={colorMode === 'dark' ? 'gray.800' : 'white.100'} px="5" py="2">
-          <Container display="flex" alignItems="center">
-            {/* User Profile Picture Placeholder */}
+
+        {/* Conditionally Render Settings, Notifications, and Profile */}
+        {accessToken && (
+          <HStack
+            spacing="4"
+            marginRight={'8.5vw'}
+            align="center"
+            marginLeft={'50px'}
+          >
+            <Notifications />
+
             <Box
               as={RouterLink}
               to="/profile" /* Link to profile page */
@@ -85,7 +92,6 @@ export const Navbar = (): JSX.Element => {
               overflow="hidden"
               w="40px"
               h="40px"
-              mr="4"
               bg="gray.300" /* Placeholder background color */
               border="2px solid gray"
               cursor="pointer"
@@ -99,52 +105,44 @@ export const Navbar = (): JSX.Element => {
               />
             </Box>
 
-            {/* Dark Mode Toggle */}
-            <Box>
-              <Icon as={MdWbSunny} cursor="pointer" onClick={toggleColorMode} />
-            </Box>
-          </Container>
-        </Box>
+            <Button
+              as={RouterLink}
+              to="/settings"
+              fontSize={'sm'}
+              fontWeight={400}
+              variant={'link'}
+            >
+              <Icon as={MdSettings} w={6} h={6} />{' '}
+            </Button>
 
-        <HStack spacing="10" marginRight={'8.5vw'}>
-          {accessToken ? (
-            <>
-              {/* Add the Settings Link when logged in */}
-              <Button
-                as={RouterLink}
-                to="/settings"
-                fontSize={'sm'}
-                fontWeight={400}
-                variant={'link'}
-              >
-                {t('settings')}
-              </Button>
-              <LogoutButton />
-            </>
-          ) : (
-            <>
-              <Button
-                as={RouterLink}
-                to="/login"
-                fontSize={'sm'}
-                fontWeight={400}
-                variant={'link'}
-              >
-                {t('sign_in')}
-              </Button>
-              <Text>/</Text>
-              <Button
-                fontSize={'sm'}
-                fontWeight={400}
-                as={RouterLink}
-                to="/register"
-                variant={'link'}
-              >
-                {t('sign_up')}
-              </Button>
-            </>
-          )}
-        </HStack>
+            <LogoutButton />
+          </HStack>
+        )}
+
+        {/* Show Sign In / Register if not logged in */}
+        {!accessToken && (
+          <HStack spacing="10" marginRight={'8.5vw'}>
+            <Button
+              as={RouterLink}
+              to="/login"
+              fontSize={'sm'}
+              fontWeight={400}
+              variant={'link'}
+            >
+              {t('sign_in')}
+            </Button>
+            <Text>/</Text>
+            <Button
+              fontSize={'sm'}
+              fontWeight={400}
+              as={RouterLink}
+              to="/register"
+              variant={'link'}
+            >
+              {t('sign_up')}
+            </Button>
+          </HStack>
+        )}
       </Flex>
     </Box>
   );
