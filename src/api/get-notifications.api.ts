@@ -1,6 +1,6 @@
 import { api } from './api';
 
-export interface Notification {
+export interface ApiNotification {
   id: number;
   type: 'like' | 'comment' | 'follow';
   fromUser: { id: number; username: string };
@@ -9,7 +9,7 @@ export interface Notification {
   createdAt: string;
 }
 
-export const getNotifications = async (): Promise<Notification[]> => {
+export const getNotifications = async (): Promise<ApiNotification[]> => {
   const { data } = await api.get('/notifications');
   return data;
 };

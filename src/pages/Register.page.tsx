@@ -123,6 +123,7 @@ export const Register = (): JSX.Element => {
                 />
               </FormControl>
               <Button
+                type="submit"
                 backgroundColor="#97C0E4"
                 size="md"
                 width="150px"
@@ -130,13 +131,14 @@ export const Register = (): JSX.Element => {
               >
                 {t('signup_button', 'Sign Up')}
               </Button>
-              {errors.length > 0 && (
-                <Text color="red.500">
-                  {errors.map((error, index) => (
-                    <div key={index}>{t(error)}</div>
-                  ))}
-                </Text>
-              )}
+              {Array.isArray(errors) &&
+                errors.length > 0 && ( // Ensure errors is an array
+                  <Text color="red.500">
+                    {errors.map((error, index) => (
+                      <div key={index}>{t(error)}</div>
+                    ))}
+                  </Text>
+                )}
               <Text
                 align="center"
                 width="150px"

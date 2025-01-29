@@ -8,11 +8,12 @@ import {
   uploadImage,
   ApiPost,
 } from 'api';
-import { Post, PostFormModal } from 'components';
-import React, { useEffect, useState } from 'react';
+import { Chat, Post, PostFormModal } from 'components';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
 import { Layout } from '../components/Layout'; // Import the reusable Layout component
+import { AuthContext } from '../components/AuthContext';
 
 interface FormData {
   title: string;
@@ -27,6 +28,7 @@ type EditState =
 export const Feed = (): JSX.Element => {
   const { t } = useTranslation('feed');
   const [edit, setEdit] = useState<EditState | null>(null);
+  const { user } = useContext(AuthContext);
 
   const { loading, value = [], retry } = useAsyncRetry(getPosts);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -98,7 +100,11 @@ export const Feed = (): JSX.Element => {
 
   return (
     <Layout
-      leftContent={<Box />} // Leave the left section empty for now
+      leftContent={
+        <Box>
+          <Chat userId={user.id} />
+        </Box>
+      } // Leave the left section empty for now
       rightContent={
         <VStack spacing={6} align="stretch" w="100%">
           {/* Center the Create New Post Button */}

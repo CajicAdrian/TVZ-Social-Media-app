@@ -9,11 +9,11 @@ import {
   Spinner,
   Divider,
 } from '@chakra-ui/react';
-import { getNotifications, markNotificationAsRead, Notification } from 'api';
+import { getNotifications, markNotificationAsRead, ApiNotification } from 'api';
 import { FaBell } from 'react-icons/fa';
 
 export const Notifications = (): ReactElement => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<ApiNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
