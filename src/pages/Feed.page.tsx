@@ -46,18 +46,6 @@ export const Feed = (): JSX.Element => {
     }
   }, [edit]);
 
-  const openEditModal = (post: ApiPost) => {
-    api.get(`/posts/${post.id}/comments`);
-    setEdit({
-      mode: 'edit',
-      postId: post.id,
-      data: {
-        title: post.title,
-        description: post.description,
-      },
-    });
-  };
-
   const cancelEdit = () => {
     setEdit(null);
   };
@@ -100,11 +88,7 @@ export const Feed = (): JSX.Element => {
 
   return (
     <Layout
-      leftContent={
-        <Box>
-          <Chat userId={user.id} />
-        </Box>
-      } // Leave the left section empty for now
+      leftContent={<Box>{user?.id && <Chat userId={user.id} />}</Box>}
       rightContent={
         <VStack spacing={6} align="stretch" w="100%">
           {/* Center the Create New Post Button */}
@@ -131,18 +115,24 @@ export const Feed = (): JSX.Element => {
             <Spinner alignSelf="center" />
           ) : (
             <VStack spacing="1rem">
-              {value.map((post, idx) => (
+              {value.map((post) => (
                 <Post
+                  key={post.id}
                   postId={post.id}
                   title={post.title}
                   description={post.description}
-                  image={post.images?.[0]}
+                  image={
+                    post.images?.[0] ?? {
+                      imageId: 0,
+                      filePath: '',
+                      fileName: '',
+                    }
+                  }
+                  profileImage={post.profileImage} // ✅ Pass profileImage here
                   username={post.username}
                   commentCount={post.commentCount}
                   likeCount={post.likeCount}
                   likedByCurrentUser={post.likedByCurrentUser}
-                  key={`key-post-${idx}`}
-                  onEdit={() => openEditModal(post)}
                   onChange={retry}
                 />
               ))}

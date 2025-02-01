@@ -2,17 +2,15 @@ import React, { ReactElement, useCallback, useContext } from 'react';
 import {
   Box,
   Flex,
-  Text,
   Button,
   Icon,
   useColorModeValue,
   useBreakpointValue,
   useColorMode,
-  Container,
   HStack,
-  Image,
+  Avatar,
 } from '@chakra-ui/react';
-import { MdSettings } from 'react-icons/md';
+import { MdSettings, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -37,19 +35,19 @@ export const LogoutButton = (): ReactElement => {
 
 export const Navbar = (): JSX.Element => {
   const { toggleColorMode, colorMode } = useColorMode();
-  const { accessToken } = useContext(AuthContext);
+  const { accessToken, user } = useContext(AuthContext); // ✅ Fetch user from AuthContext
   const { t } = useTranslation();
 
   return (
     <Box>
       <Flex
         as="nav"
-        position="fixed" /* Stays at the top */
+        position="fixed"
         top="0"
         left="0"
         w="100vw"
         h="60px"
-        zIndex="10" /* Above the background */
+        zIndex="10"
         bg={useColorModeValue('white', 'gray.800')}
         color={useColorModeValue('gray.600', 'white')}
         borderBottom="1px solid"
@@ -75,7 +73,6 @@ export const Navbar = (): JSX.Element => {
           </Button>
         </Flex>
 
-        {/* Conditionally Render Settings, Notifications, and Profile */}
         {accessToken && (
           <HStack
             spacing="4"
@@ -85,23 +82,38 @@ export const Navbar = (): JSX.Element => {
           >
             <Notifications />
 
+            {/* ✅ DARK MODE BUTTON WORKS */}
+            <Button onClick={toggleColorMode} variant="ghost">
+              {colorMode === 'light' ? (
+                <Icon as={MdDarkMode} w={6} h={6} />
+              ) : (
+                <Icon as={MdLightMode} w={6} h={6} />
+              )}
+            </Button>
+
+            {/* ✅ FIXED PROFILE IMAGE IN AVATAR */}
             <Box
               as={RouterLink}
-              to="/profile" /* Link to profile page */
+              to="/profile"
               borderRadius="full"
               overflow="hidden"
               w="40px"
               h="40px"
-              bg="gray.300" /* Placeholder background color */
               border="2px solid gray"
               cursor="pointer"
             >
-              <Image
-                src="https://via.placeholder.com/40" /* Placeholder image */
-                alt="User Profile"
-                objectFit="cover"
-                w="100%"
-                h="100%"
+              <Avatar
+                size="md"
+                name={user?.username}
+                src={
+                  user?.profileImage
+                    ? `http://localhost:3000/${user.profileImage.replace(
+                        'static/',
+                        '',
+                      )}`
+                    : undefined
+                }
+                bg="lightblue"
               />
             </Box>
 
@@ -112,14 +124,13 @@ export const Navbar = (): JSX.Element => {
               fontWeight={400}
               variant={'link'}
             >
-              <Icon as={MdSettings} w={6} h={6} />{' '}
+              <Icon as={MdSettings} w={6} h={6} />
             </Button>
 
             <LogoutButton />
           </HStack>
         )}
 
-        {/* Show Sign In / Register if not logged in */}
         {!accessToken && (
           <HStack spacing="10" marginRight={'8.5vw'}>
             <Button
@@ -131,7 +142,6 @@ export const Navbar = (): JSX.Element => {
             >
               {t('sign_in')}
             </Button>
-            <Text>/</Text>
             <Button
               fontSize={'sm'}
               fontWeight={400}

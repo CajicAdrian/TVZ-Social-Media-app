@@ -19,29 +19,26 @@ import {
 } from 'api';
 
 export const Chat = ({ userId }: { userId: number }) => {
-  const [isOpen, setIsOpen] = useState(false); // Toggle chat open/close
-  const [users, setUsers] = useState<ApiUser[]>([]); // List of all users
-  const [currentUser, setCurrentUser] = useState<ApiUser | null>(null); // Selected user
-  const [messages, setMessages] = useState<ApiMessage[]>([]); // Messages in the conversation
-  const [newMessage, setNewMessage] = useState(''); // Input field value
+  const [isOpen, setIsOpen] = useState(false);
+  const [users, setUsers] = useState<ApiUser[]>([]);
+  const [currentUser, setCurrentUser] = useState<ApiUser | null>(null);
+  const [messages, setMessages] = useState<ApiMessage[]>([]);
+  const [newMessage, setNewMessage] = useState('');
 
   const chatRef = React.useRef(null);
 
-  // Close chat when clicking outside
   useOutsideClick({
     ref: chatRef,
     handler: () => {
       if (isOpen) {
         setIsOpen(false);
-        setCurrentUser(null); // Reset view to user list
+        setCurrentUser(null);
       }
     },
   });
 
-  // Toggle chat box
   const toggleChat = () => setIsOpen(!isOpen);
 
-  // Fetch all users except the current user
   useEffect(() => {
     if (isOpen && !currentUser) {
       const fetchUsers = async () => {
@@ -56,10 +53,8 @@ export const Chat = ({ userId }: { userId: number }) => {
     }
   }, [isOpen, currentUser]);
 
-  // Fetch conversation messages when a user is clicked
   const handleUserClick = async (selectedUser: ApiUser) => {
-    setCurrentUser(selectedUser); // Set selected user
-
+    setCurrentUser(selectedUser);
     try {
       const conversationMessages = await getMessages(userId, selectedUser.id);
       setMessages(conversationMessages);
@@ -68,20 +63,18 @@ export const Chat = ({ userId }: { userId: number }) => {
     }
   };
 
-  // Handle sending a message
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !currentUser) return;
 
     try {
       const newMsg = await sendMessage(userId, currentUser.id, newMessage);
-      setMessages((prev) => [...prev, newMsg]); // Add the new message to the chat
-      setNewMessage(''); // Clear input field
+      setMessages((prev) => [...prev, newMsg]);
+      setNewMessage('');
     } catch (error) {
       console.error('Failed to send message:', error);
     }
   };
 
-  // Auto-refresh messages every 5 seconds
   useEffect(() => {
     if (currentUser) {
       const interval = setInterval(async () => {
@@ -92,8 +85,7 @@ export const Chat = ({ userId }: { userId: number }) => {
           console.error('Failed to refresh messages:', error);
         }
       }, 5000);
-
-      return () => clearInterval(interval); // Clear interval on cleanup
+      return () => clearInterval(interval);
     }
   }, [currentUser, userId]);
 
@@ -127,15 +119,26 @@ export const Chat = ({ userId }: { userId: number }) => {
                 <HStack
                   key={user.id}
                   w="15%"
-                  m={2}
-                  p={2}
+                  px={4}
+                  py={2}
                   bg="gray.100"
                   borderRadius="md"
                   cursor="pointer"
                   _hover={{ bg: 'gray.200' }}
                   onClick={() => handleUserClick(user)}
                 >
-                  <Avatar name={user.username} bg="lightblue" />
+                  <Avatar
+                    name={user.username}
+                    src={
+                      user.profileImage
+                        ? `http://localhost:3000/${user.profileImage.replace(
+                            'static/',
+                            '',
+                          )}`
+                        : undefined
+                    }
+                    bg="lightblue"
+                  />
                   <Text fontWeight="bold">{user.username}</Text>
                 </HStack>
               ))}

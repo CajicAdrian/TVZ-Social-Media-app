@@ -4,7 +4,9 @@ export interface ApiUser {
   id: number;
   username: string;
   bio?: string; // Add any additional fields if required
-  profilePictureUrl?: string; // Placeholder for user pictures
+  profileImage?: string; // Placeholder for user pictures
+  email?: string; // ✅ Add email
+  gender?: 'male' | 'female' | null;
 }
 
 export const getAllUsersExceptMe = async (): Promise<ApiUser[]> => {

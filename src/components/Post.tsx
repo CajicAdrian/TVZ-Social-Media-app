@@ -22,6 +22,7 @@ interface Props {
   postId: number;
   username: string;
   image: ImageProps;
+  profileImage?: string;
   title: string;
   description: string;
   commentCount: number;
@@ -36,6 +37,7 @@ export function Post({
   username,
   description,
   image,
+  profileImage,
   title,
   commentCount,
   likedByCurrentUser,
@@ -60,10 +62,20 @@ export function Post({
         <Flex align="center" p={4} justify="space-between">
           <Flex align="center">
             <Avatar
-              src="https://via.placeholder.com/150" // Replace with actual user avatar
               size="md"
+              name={username}
+              src={
+                profileImage
+                  ? `http://localhost:3000/${profileImage.replace(
+                      'static/',
+                      '',
+                    )}`
+                  : undefined
+              }
+              bg="lightblue"
               mr={4}
             />
+
             <Box>
               <Text fontWeight="bold" fontSize="lg">
                 {username} - {title}

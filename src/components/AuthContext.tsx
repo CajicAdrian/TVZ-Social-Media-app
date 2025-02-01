@@ -6,11 +6,13 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { getCurrentUser } from 'api'; // ✅ Import API call
 
 interface User {
   id: number;
   username: string;
   bio?: string;
+  profileImage?: string;
 }
 
 interface IAuthContext {
@@ -38,13 +40,33 @@ export const AuthProvider: FC = ({ children }: PropsWithChildren<NoProps>) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Retrieve user and token from localStorage (if available) on app load
-    const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-    const storedToken = localStorage.getItem('accessToken') || '';
-    if (storedUser) setUser(storedUser);
-    if (storedToken) setAccessToken(storedToken);
-  }, []);
+    const fetchUser = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+        const storedToken = localStorage.getItem('accessToken') || '';
 
+        if (storedUser) {
+          setUser(storedUser); // ✅ Load stored user
+        }
+
+        if (storedToken) {
+          setAccessToken(storedToken);
+        }
+
+        if (!storedUser && storedToken) {
+          const fetchedUser = await getCurrentUser(); // ✅ Fetch user with profile image
+          if (fetchedUser) {
+            setUser(fetchedUser);
+            localStorage.setItem('user', JSON.stringify(fetchedUser)); // ✅ Save to localStorage
+          }
+        }
+      } catch (error) {
+        console.error('❌ Failed to fetch user:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
   useEffect(() => {
     // Save user and token to localStorage whenever they are updated
     if (user) localStorage.setItem('user', JSON.stringify(user));

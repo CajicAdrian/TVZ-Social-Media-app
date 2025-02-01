@@ -1,25 +1,25 @@
-import React, { useContext, useState } from 'react';
-import { VStack, Spinner, Text, Box } from '@chakra-ui/react';
+import { VStack, Spinner, Text, Box, Avatar, Center } from '@chakra-ui/react';
 import { AuthContext } from '../components/AuthContext';
 import { Layout } from '../components/Layout';
 import { Post } from '../components/Post';
 import { useAsyncRetry } from 'react-use';
-import { getPostsByUser } from 'api';
+import { getPostsByUser, ApiPost } from 'api';
+import React, { useContext, useState } from 'react';
 
 export const Profile = (): JSX.Element => {
-  const { user } = useContext(AuthContext); // Fetch the logged-in user
+  const { user } = useContext(AuthContext); // Fetch logged-in user
   const [error, setError] = useState<string | null>(null);
 
   const {
     loading,
     value: posts = [],
     retry,
-  } = useAsyncRetry(async () => {
+  } = useAsyncRetry<ApiPost[]>(async () => {
     if (!user?.id) {
       throw new Error('User ID is not available');
     }
     try {
-      return await getPostsByUser(user.id); // Fetch posts by user ID
+      return await getPostsByUser(user.id);
     } catch (err) {
       setError('Failed to fetch posts');
       throw err;
@@ -29,12 +29,33 @@ export const Profile = (): JSX.Element => {
   return (
     <Layout
       leftContent={
-        <Box>
+        <Center flexDirection="column">
+          {/* ✅ Profile Image / Avatar */}
+          <Avatar
+            size="2xl"
+            name={user?.username}
+            src={
+              user?.profileImage
+                ? `http://localhost:3000/${user.profileImage.replace(
+                    'static/',
+                    '',
+                  )}`
+                : undefined
+            }
+            bg="lightblue"
+            mb={4} // Spacing below the avatar
+          />
+
+          {/* ✅ Username */}
           <Text fontSize="2xl" fontWeight="bold">
-            {user?.username}'s Profile
+            {user?.username}
           </Text>
-          <Text>{user?.bio || 'No bio available'}</Text>
-        </Box>
+
+          {/* ✅ Bio */}
+          <Text fontSize="md" color="gray.600" mt={2}>
+            {user?.bio || 'No bio available'}
+          </Text>
+        </Center>
       }
       rightContent={
         <VStack spacing={6} align="stretch" w="100%">
@@ -55,7 +76,14 @@ export const Profile = (): JSX.Element => {
                   postId={post.id}
                   title={post.title}
                   description={post.description}
-                  image={post.images[0]}
+                  image={
+                    post.images?.[0] ?? {
+                      imageId: 0,
+                      filePath: '',
+                      fileName: '',
+                    }
+                  }
+                  profileImage={post.profileImage} // ✅ No more TS error
                   username={post.username}
                   commentCount={post.commentCount}
                   likeCount={post.likeCount}
