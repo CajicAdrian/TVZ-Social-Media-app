@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useContext } from 'react';
+import React, { ReactElement, useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Flex,
@@ -12,19 +12,21 @@ import {
 } from '@chakra-ui/react';
 import { MdSettings, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
+import { getCurrentUser } from 'api';
 import { useTranslation } from 'react-i18next';
 import { Notifications } from './Notifications';
+import { AuthContext } from './AuthContext';
 
 export const LogoutButton = (): ReactElement => {
   const { t } = useTranslation();
-  const { setAccessToken } = useContext(AuthContext);
+  const { setAccessToken } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
-  const logout = useCallback(() => {
+  const logout = () => {
     setAccessToken('');
+    localStorage.removeItem('user');
     navigate('/');
-  }, [setAccessToken, navigate]);
+  };
 
   return (
     <Button onClick={logout} fontSize={'sm'} fontWeight={600} colorScheme="red">
@@ -35,8 +37,41 @@ export const LogoutButton = (): ReactElement => {
 
 export const Navbar = (): JSX.Element => {
   const { toggleColorMode, colorMode } = useColorMode();
-  const { accessToken, user } = useContext(AuthContext); // ✅ Fetch user from AuthContext
+  const { accessToken } = React.useContext(AuthContext);
   const { t } = useTranslation();
+  const [user, setUser] = useState<{
+    id: number;
+    username: string;
+    profileImage?: string;
+  } | null>(null);
+
+  // ✅ Function to fetch user data
+  const fetchUser = useCallback(async () => {
+    try {
+      const fetchedUser = await getCurrentUser();
+      setUser(fetchedUser);
+    } catch (err) {
+      console.error('❌ Failed to fetch user:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (accessToken) {
+      fetchUser();
+    }
+  }, [accessToken, fetchUser]);
+
+  // ✅ Listen for profile image updates (triggered from the settings page)
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      fetchUser(); // ✅ Re-fetch user data when profile updates
+    };
+
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [fetchUser]);
 
   return (
     <Box>
@@ -73,7 +108,7 @@ export const Navbar = (): JSX.Element => {
           </Button>
         </Flex>
 
-        {accessToken && (
+        {accessToken && user && (
           <HStack
             spacing="4"
             marginRight={'8.5vw'}
@@ -82,7 +117,7 @@ export const Navbar = (): JSX.Element => {
           >
             <Notifications />
 
-            {/* ✅ DARK MODE BUTTON WORKS */}
+            {/* ✅ DARK MODE BUTTON */}
             <Button onClick={toggleColorMode} variant="ghost">
               {colorMode === 'light' ? (
                 <Icon as={MdDarkMode} w={6} h={6} />
@@ -91,7 +126,7 @@ export const Navbar = (): JSX.Element => {
               )}
             </Button>
 
-            {/* ✅ FIXED PROFILE IMAGE IN AVATAR */}
+            {/* ✅ USER AVATAR FROM getCurrentUser(), AUTO-UPDATES */}
             <Box
               as={RouterLink}
               to="/profile"
@@ -104,9 +139,9 @@ export const Navbar = (): JSX.Element => {
             >
               <Avatar
                 size="md"
-                name={user?.username}
+                name={user.username}
                 src={
-                  user?.profileImage
+                  user.profileImage
                     ? `http://localhost:3000/${user.profileImage.replace(
                         'static/',
                         '',

@@ -2,7 +2,6 @@ import React, {
   createContext,
   FC,
   PropsWithChildren,
-  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -11,8 +10,6 @@ import { getCurrentUser } from 'api'; // ✅ Import API call
 interface User {
   id: number;
   username: string;
-  bio?: string;
-  profileImage?: string;
 }
 
 interface IAuthContext {
@@ -45,19 +42,21 @@ export const AuthProvider: FC = ({ children }: PropsWithChildren<NoProps>) => {
         const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
         const storedToken = localStorage.getItem('accessToken') || '';
 
-        if (storedUser) {
-          setUser(storedUser); // ✅ Load stored user
-        }
-
         if (storedToken) {
           setAccessToken(storedToken);
         }
 
-        if (!storedUser && storedToken) {
-          const fetchedUser = await getCurrentUser(); // ✅ Fetch user with profile image
+        if (storedUser) {
+          setUser(storedUser); // ✅ Load user from storage
+        } else if (storedToken) {
+          const fetchedUser = await getCurrentUser(); // ✅ Fetch user from API
           if (fetchedUser) {
-            setUser(fetchedUser);
-            localStorage.setItem('user', JSON.stringify(fetchedUser)); // ✅ Save to localStorage
+            const minimalUser = {
+              id: fetchedUser.id,
+              username: fetchedUser.username, // ✅ Only store what we need
+            };
+            setUser(minimalUser);
+            localStorage.setItem('user', JSON.stringify(minimalUser));
           }
         }
       } catch (error) {
@@ -67,13 +66,19 @@ export const AuthProvider: FC = ({ children }: PropsWithChildren<NoProps>) => {
 
     fetchUser();
   }, []);
-  useEffect(() => {
-    // Save user and token to localStorage whenever they are updated
-    if (user) localStorage.setItem('user', JSON.stringify(user));
-    else localStorage.removeItem('user');
 
-    if (accessToken) localStorage.setItem('accessToken', accessToken);
-    else localStorage.removeItem('accessToken');
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+
+    if (accessToken) {
+      localStorage.setItem('accessToken', accessToken);
+    } else {
+      localStorage.removeItem('accessToken');
+    }
   }, [user, accessToken]);
 
   return (

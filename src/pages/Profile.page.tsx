@@ -1,15 +1,35 @@
 import { VStack, Spinner, Text, Box, Avatar, Center } from '@chakra-ui/react';
-import { AuthContext } from '../components/AuthContext';
 import { Layout } from '../components/Layout';
 import { Post } from '../components/Post';
 import { useAsyncRetry } from 'react-use';
-import { getPostsByUser, ApiPost } from 'api';
-import React, { useContext, useState } from 'react';
+import { getPostsByUser, getCurrentUser, ApiPost } from 'api';
+import React, { useEffect, useState } from 'react';
 
 export const Profile = (): JSX.Element => {
-  const { user } = useContext(AuthContext); // Fetch logged-in user
+  const [user, setUser] = useState<{
+    id: number;
+    username: string;
+    profileImage?: string;
+    bio?: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // ✅ Fetch user on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const fetchedUser = await getCurrentUser(); // ✅ Fetch from API
+        setUser(fetchedUser);
+      } catch (err) {
+        console.error('❌ Failed to fetch user:', err);
+        setError('Failed to load user profile');
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // ✅ Fetch posts only when user is available
   const {
     loading,
     value: posts = [],
@@ -24,37 +44,44 @@ export const Profile = (): JSX.Element => {
       setError('Failed to fetch posts');
       throw err;
     }
-  });
+  }, [user?.id]); // ✅ Dependency added to re-fetch if user ID changes
 
   return (
     <Layout
       leftContent={
         <Center flexDirection="column">
-          {/* ✅ Profile Image / Avatar */}
-          <Avatar
-            size="2xl"
-            name={user?.username}
-            src={
-              user?.profileImage
-                ? `http://localhost:3000/${user.profileImage.replace(
-                    'static/',
-                    '',
-                  )}`
-                : undefined
-            }
-            bg="lightblue"
-            mb={4} // Spacing below the avatar
-          />
+          {/* ✅ Ensure `user` is loaded before rendering */}
+          {user ? (
+            <>
+              {/* ✅ Profile Image / Avatar */}
+              <Avatar
+                size="2xl"
+                name={user.username}
+                src={
+                  user.profileImage
+                    ? `http://localhost:3000/${user.profileImage.replace(
+                        'static/',
+                        '',
+                      )}`
+                    : undefined
+                }
+                bg="lightblue"
+                mb={4} // Spacing below the avatar
+              />
 
-          {/* ✅ Username */}
-          <Text fontSize="2xl" fontWeight="bold">
-            {user?.username}
-          </Text>
+              {/* ✅ Username */}
+              <Text fontSize="2xl" fontWeight="bold">
+                {user.username}
+              </Text>
 
-          {/* ✅ Bio */}
-          <Text fontSize="md" color="gray.600" mt={2}>
-            {user?.bio || 'No bio available'}
-          </Text>
+              {/* ✅ Bio */}
+              <Text fontSize="md" color="gray.600" mt={2}>
+                {user.bio || 'No bio available'}
+              </Text>
+            </>
+          ) : (
+            <Spinner size="lg" />
+          )}
         </Center>
       }
       rightContent={

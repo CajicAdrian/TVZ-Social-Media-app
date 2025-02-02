@@ -129,6 +129,9 @@ export const Settings = (): JSX.Element => {
         profileImage: newProfileImage,
       }));
 
+      // ✅ Notify Navbar and other components to refresh the profile image
+      window.dispatchEvent(new Event('profileUpdated'));
+
       // ✅ Fetch latest user data after 1s delay to confirm backend save
       setTimeout(async () => {
         try {
@@ -143,6 +146,9 @@ export const Settings = (): JSX.Element => {
                 '',
               ),
             }));
+
+            // ✅ Dispatch event again in case of delayed updates
+            window.dispatchEvent(new Event('profileUpdated'));
           }
         } catch (error) {
           console.error('❌ Failed to refresh user data:', error);
