@@ -32,20 +32,41 @@ export const Login = (): JSX.Element => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState<string[]>([]);
 
+  console.log('🔍 Inside Login.tsx - Current AuthContext:', {
+    setAccessToken,
+    setUser,
+  });
+
   const onSubmit = async (data: FormData) => {
-    if (data.username && data.password) {
-      try {
-        const { accessToken, user } = await login(data);
-        console.log('API Response:', { accessToken, user }); // Log API response
-        setAccessToken(accessToken);
-        setUser(user);
+    if (!setAccessToken || !setUser) {
+      console.error(
+        '❌ AuthContext is missing. Ensure <AuthProvider> is wrapping <Login />.',
+      );
+      return;
+    }
+
+    try {
+      const { accessToken, user } = await login(data);
+      if (!accessToken || !user)
+        throw new Error('❌ Login failed: Missing accessToken or user');
+
+      console.log('🚀 Setting user & token in AuthContext:', {
+        accessToken,
+        user,
+      });
+
+      setAccessToken(accessToken);
+      setUser(user);
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      setTimeout(() => {
         navigate('/');
-      } catch (error) {
-        console.error('Login failed:', error);
-        setErrors([t('login_failed', 'Login failed. Please try again.')]);
-      }
-    } else {
-      setErrors([t('missing_fields', 'Please fill in all required fields.')]);
+      }, 300);
+    } catch (error: any) {
+      console.error('❌ Login failed:', error);
+      setErrors(['Login failed. Please try again.']);
     }
   };
 
@@ -53,23 +74,23 @@ export const Login = (): JSX.Element => {
     <Flex height="100vh" width="100vw">
       {/* Left Image Section */}
       <Box
-        position="absolute" /* Detach the background from layout */
-        top="-20" /* Start at the top of the viewport */
-        left="0" /* Align to the left */
-        width="50vw" /* Cover only the left half of the viewport */
+        position="absolute"
+        top="-20"
+        left="0"
+        width="50vw"
         height="calc(100vh + 20px)"
-        bgImage={`url(${img})`} /* Background image */
+        bgImage={`url(${img})`}
         bgRepeat="no-repeat"
         bgSize="cover"
         bgPosition="center"
-        zIndex="-1" /* Keep it behind all content */
+        zIndex="-1"
       />
 
       {/* Right Form Section */}
       <Flex
-        width="50%" /* Restrict the form to the right half */
-        height="100vh" /* Match the viewport height */
-        ml="auto" /* Push the form to the right */
+        width="50%"
+        height="100vh"
+        ml="auto"
         direction="column"
         justify="center"
         align="center"

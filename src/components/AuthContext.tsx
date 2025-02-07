@@ -4,86 +4,69 @@ import React, {
   PropsWithChildren,
   useEffect,
   useState,
+  useContext,
 } from 'react';
-import { getCurrentUser } from 'api'; // ✅ Import API call
+import { getCurrentUser } from 'api';
 
+// Define User interface
 interface User {
   id: number;
   username: string;
 }
 
+// Define Authentication Context Interface
 interface IAuthContext {
   accessToken: string;
   setAccessToken: (token: string) => void;
   user: User | null;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
+  isInitialized: boolean;
 }
 
 export const AuthContext = createContext<IAuthContext>({
   accessToken: '',
-  setAccessToken: () => {
-    throw new Error('Missing context');
-  },
+  setAccessToken: () => {},
   user: null,
-  setUser: () => {
-    throw new Error('Missing context');
-  },
+  setUser: () => {},
+  isInitialized: false,
 });
 
-type NoProps = Record<string, unknown>;
+export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider: FC = ({ children }: PropsWithChildren<NoProps>) => {
+export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
+  const [isInitialized, setIsInitialized] = useState(false);
   const [accessToken, setAccessToken] = useState<string>('');
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-        const storedToken = localStorage.getItem('accessToken') || '';
+    console.log('🔍 Checking localStorage for session...');
 
-        if (storedToken) {
-          setAccessToken(storedToken);
-        }
+    const storedToken = localStorage.getItem('accessToken');
+    const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-        if (storedUser) {
-          setUser(storedUser); // ✅ Load user from storage
-        } else if (storedToken) {
-          const fetchedUser = await getCurrentUser(); // ✅ Fetch user from API
-          if (fetchedUser) {
-            const minimalUser = {
-              id: fetchedUser.id,
-              username: fetchedUser.username, // ✅ Only store what we need
-            };
-            setUser(minimalUser);
-            localStorage.setItem('user', JSON.stringify(minimalUser));
-          }
-        }
-      } catch (error) {
-        console.error('❌ Failed to fetch user:', error);
-      }
-    };
+    console.log('🟡 Initial values from localStorage:', {
+      storedToken,
+      storedUser,
+    });
 
-    fetchUser();
+    if (storedToken && storedUser) {
+      console.log('✅ Found session in storage, setting user & token');
+      setAccessToken(storedToken);
+      setUser(storedUser);
+    } else {
+      console.warn('🚨 No valid session found, forcing login.');
+    }
+
+    // ✅ Always set `isInitialized = true` at the end
+    setTimeout(() => {
+      console.log('✅ AuthContext fully initialized!');
+      setIsInitialized(true);
+    }, 100); // Small delay to allow React to update state
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
-
-    if (accessToken) {
-      localStorage.setItem('accessToken', accessToken);
-    } else {
-      localStorage.removeItem('accessToken');
-    }
-  }, [user, accessToken]);
 
   return (
     <AuthContext.Provider
-      value={{ accessToken, setAccessToken, user, setUser }}
+      value={{ accessToken, setAccessToken, user, setUser, isInitialized }}
     >
       {children}
     </AuthContext.Provider>

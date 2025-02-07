@@ -1,19 +1,12 @@
 import { Box, Button, Spinner, useDisclosure, VStack } from '@chakra-ui/react';
-import {
-  api,
-  createPost,
-  deletePost,
-  getPosts,
-  updatePost,
-  uploadImage,
-  ApiPost,
-} from 'api';
+import { createPost, deletePost, getPosts, updatePost, uploadImage } from 'api';
 import { Chat, Post, PostFormModal } from 'components';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
 import { Layout } from '../components/Layout'; // Import the reusable Layout component
 import { AuthContext } from '../components/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 interface FormData {
   title: string;
@@ -32,6 +25,13 @@ export const Feed = (): JSX.Element => {
 
   const { loading, value = [], retry } = useAsyncRetry(getPosts);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  console.log('📢 Feed Rendering - User:', user);
+
+  if (!user) {
+    console.warn('🚨 No user in Feed, redirecting to Home');
+    return <Navigate to="/" />;
+  }
 
   const openCreateModal = () => {
     setEdit({ mode: 'create' });

@@ -1,4 +1,5 @@
 import { api } from './api';
+import { AxiosError } from 'axios'; // ✅ Import AxiosError for better error handling
 
 interface Login {
   accessToken: string;
@@ -8,24 +9,39 @@ interface Login {
     bio?: string;
   };
 }
+
 interface FormData {
   username: string;
   password: string;
 }
 
 export const login = async (input: FormData): Promise<Login> => {
-  const { username, password } = input;
-  const params = new URLSearchParams();
+  try {
+    console.log('🔄 Sending login request:', input);
 
-  params.append('password', password);
-  params.append('username', username);
+    const { data } = await api.post('/auth/signin', input, {
+      headers: { 'Content-Type': 'application/json' },
+    });
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  };
+    console.log('✅ Login successful:', data);
 
-  const { data } = await api.post('/auth/signin', params, config);
-  return data;
+    if (!data || !data.accessToken || !data.user) {
+      throw new Error('❌ API response is missing content');
+    }
+
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError; // ✅ Explicitly type `error` as AxiosError
+
+    console.error(
+      '❌ Login failed:',
+      axiosError.response?.data || axiosError.message,
+    );
+
+    throw new Error(
+      axiosError.response?.data
+        ? JSON.stringify(axiosError.response.data) // ✅ Log API error details
+        : axiosError.message,
+    );
+  }
 };

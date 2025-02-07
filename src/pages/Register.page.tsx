@@ -16,7 +16,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
-import { signup } from 'api';
+import { signup, getCurrentUser } from 'api';
 import img from '../images/SignIn.png'; // Adjust the import path as necessary
 
 interface FormData {
@@ -28,15 +28,34 @@ export const Register = (): JSX.Element => {
   const { t } = useTranslation('register');
   const { handleSubmit, register } = useForm<FormData>({});
   const navigate = useNavigate();
-  const { setAccessToken } = useContext(AuthContext);
+  const { setAccessToken, setUser } = useContext(AuthContext);
   const [errors, setErrors] = useState<string[]>([]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     if (data.username && data.password) {
       setErrors([]);
+
       const result = await signup(data);
+
       if (result.status === 'success') {
+        console.log('🚀 Signup successful, fetching user data...');
+
+        // ✅ Fetch full user details
+        const user = await getCurrentUser();
+        console.log('✅ Retrieved User Data:', user);
+
+        // ✅ Store session in AuthContext
         setAccessToken(result.accessToken);
+        setUser(user);
+
+        // ✅ Store session in localStorage
+        localStorage.setItem('accessToken', result.accessToken);
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // ❗ Wait for React to process AuthContext before navigating
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        console.log('✅ Redirecting to Feed...');
         navigate('/');
       } else {
         setErrors(result.messages);
