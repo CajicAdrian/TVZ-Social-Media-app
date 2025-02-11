@@ -6,3 +6,7 @@ export { PostFormModal } from './PostFormModal';
 export { AuthContext, AuthProvider } from './AuthContext';
 export { LanguageMenu } from './LanguageMenu';
 export { Chat } from './Chat';
+export { Layout } from './Layout';
+export { Notifications } from './Notifications';
+export { Likes } from './Likes';
+export { Comments } from './Comments';

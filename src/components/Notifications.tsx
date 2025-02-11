@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect, useContext } from 'react';
 import {
   Box,
   Button,
@@ -9,19 +9,24 @@ import {
   Spinner,
   Divider,
 } from '@chakra-ui/react';
-import { getNotifications, markNotificationAsRead } from 'api';
+import {
+  getNotifications,
+  markNotificationAsRead,
+  getNotificationRefreshRate,
+} from 'api';
 import { FaBell } from 'react-icons/fa';
+import { AuthContext } from '../components/AuthContext'; // ✅ Get user ID from AuthContext
 
-// ✅ Define the expected notification type (assuming this matches your API response)
+// ✅ Notification type (must match API response)
 interface ApiNotification {
   id: number;
-  type: 'like' | 'comment' | 'follow';
+  type: 'like' | 'comment';
   read: boolean;
   createdAt: string;
   fromUser: {
     id: number;
     username: string;
-    profileImage?: string; // ✅ Optional in case there's no image
+    profileImage?: string;
   };
   post?: {
     id: number;
@@ -30,18 +35,35 @@ interface ApiNotification {
 }
 
 export const Notifications = (): ReactElement => {
-  const [notifications, setNotifications] = useState<ApiNotification[]>([]); // ✅ Correctly typed state
+  const { user } = useContext(AuthContext); // ✅ Get logged-in user
+  const [notifications, setNotifications] = useState<ApiNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [refreshRate, setRefreshRate] = useState<number>(30000); // ✅ Default to 30s
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null); // ✅ Store interval reference
+
+  // ✅ Converts "10s" → 10000ms, "30s" → 30000ms, "1min" → 60000ms
+  const convertRefreshRateToMs = (rate: string): number => {
+    switch (rate) {
+      case '10s':
+        return 10000;
+      case '30s':
+        return 30000;
+      case '1min':
+        return 60000;
+      default:
+        return 30000;
+    }
+  };
 
   // ✅ Fetch notifications from API
   const fetchNotifications = async () => {
     setLoading(true);
     try {
       const data: ApiNotification[] = await getNotifications();
-      setNotifications(data); // ✅ No TypeScript error now
+      setNotifications(data);
     } catch (err) {
-      console.error('Error fetching notifications:', err);
+      console.error('❌ Error fetching notifications:', err);
     } finally {
       setLoading(false);
     }
@@ -59,16 +81,84 @@ export const Notifications = (): ReactElement => {
         ),
       );
     } catch (err) {
-      console.error('Error marking notification as read:', err);
+      console.error('❌ Error marking notification as read:', err);
     }
   };
 
-  // ✅ Fetch notifications on component mount & poll every 5s
+  // ✅ Fetch refresh rate when the component mounts
   useEffect(() => {
-    fetchNotifications();
-    const intervalId = setInterval(fetchNotifications, 5000);
-    return () => clearInterval(intervalId);
+    if (!user?.id) return;
+
+    const fetchRefreshRate = async () => {
+      try {
+        let storedRate = localStorage.getItem('notificationRefreshRate');
+
+        if (!storedRate) {
+          storedRate = await getNotificationRefreshRate(user.id);
+          localStorage.setItem('notificationRefreshRate', storedRate);
+        }
+
+        const newRefreshRate = convertRefreshRateToMs(storedRate);
+
+        if (newRefreshRate !== refreshRate) {
+          console.log(
+            `🔄 Applying new refresh rate: ${storedRate} (${newRefreshRate}ms)`,
+          );
+          setRefreshRate(newRefreshRate);
+        }
+      } catch (error) {
+        console.error('❌ Failed to fetch refresh rate:', error);
+      }
+    };
+
+    fetchRefreshRate();
+  }, [user?.id]);
+
+  // ✅ Listen for refresh rate changes from Settings
+  useEffect(() => {
+    const updateRefreshRate = async () => {
+      try {
+        const newRate = localStorage.getItem('notificationRefreshRate');
+        if (!newRate) return; // ✅ Don't reset if value already exists
+
+        const newRefreshRate = convertRefreshRateToMs(newRate);
+        console.log(
+          `🔄 Applying new refresh rate: ${newRate} (${newRefreshRate}ms)`,
+        );
+
+        setRefreshRate(newRefreshRate);
+
+        if (intervalId) clearInterval(intervalId);
+        fetchNotifications(); // ✅ Fetch immediately after change
+        const newInterval = setInterval(fetchNotifications, newRefreshRate);
+        setIntervalId(newInterval);
+      } catch (error) {
+        console.error('❌ Failed to apply new refresh rate:', error);
+      }
+    };
+
+    window.addEventListener('refresh-rate-change', updateRefreshRate);
+    return () =>
+      window.removeEventListener('refresh-rate-change', updateRefreshRate);
   }, []);
+
+  // ✅ Start Notification Polling
+  useEffect(() => {
+    if (!refreshRate) return;
+
+    console.log(`⏳ Applying new refresh rate: ${refreshRate}ms`);
+
+    if (intervalId) clearInterval(intervalId);
+
+    fetchNotifications();
+    const newInterval = setInterval(fetchNotifications, refreshRate);
+    setIntervalId(newInterval);
+
+    return () => {
+      console.log('🛑 Clearing old interval');
+      clearInterval(newInterval);
+    };
+  }, [refreshRate]);
 
   return (
     <Box position="relative">
@@ -112,7 +202,7 @@ export const Notifications = (): ReactElement => {
                       'static/',
                       '',
                     )}`
-                  : undefined; // ✅ Use profile image if available
+                  : undefined;
 
                 return (
                   <HStack

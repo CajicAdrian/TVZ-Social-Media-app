@@ -6,9 +6,10 @@ import {
   MenuList,
   MenuOptionGroup,
 } from '@chakra-ui/react';
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdLanguage } from 'react-icons/md';
+import { getUserLanguage, updateUserLanguage } from 'api';
 
 const langNames: Record<string, string> = {
   hr: 'Hrvatski',
@@ -18,21 +19,34 @@ const langNames: Record<string, string> = {
   bg: 'български',
 };
 
-export const LanguageMenu = (): ReactElement => {
+export const LanguageMenu = ({ userId }: { userId: number }): ReactElement => {
   const { i18n, t } = useTranslation();
+  const [lang, setLang] = useState('en');
 
-  const lang = i18n.language;
+  useEffect(() => {
+    if (userId) {
+      // ✅ Only apply if user is logged in
+      getUserLanguage(userId).then((savedLang) => {
+        setLang(savedLang);
+        i18n.changeLanguage(savedLang);
+      });
+    }
+  }, [userId, i18n]);
+
   const onChange = useCallback(
-    (lang: string | string[]) => {
-      if (typeof lang !== 'string') {
+    async (selectedLang: string | string[]) => {
+      if (typeof selectedLang !== 'string') {
         throw new Error('Got weird value for language');
       }
 
-      i18n.changeLanguage(lang);
-      localStorage.setItem('lang', lang);
+      setLang(selectedLang);
+      i18n.changeLanguage(selectedLang);
+      await updateUserLanguage(userId, selectedLang);
     },
-    [i18n],
+    [i18n, userId],
   );
+
+  if (lang === null) return <p>Loading...</p>; // ✅ Prevents flashing English
 
   return (
     <Menu closeOnSelect={true}>
@@ -45,7 +59,7 @@ export const LanguageMenu = (): ReactElement => {
       </MenuButton>
       <MenuList>
         <MenuOptionGroup
-          defaultValue={lang}
+          value={lang}
           title={t('language')}
           type="radio"
           onChange={onChange}

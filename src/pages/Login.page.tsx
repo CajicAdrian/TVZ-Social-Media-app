@@ -13,12 +13,13 @@ import {
   Link,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import { login } from 'api';
+import { login, getWinSettings } from 'api';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import img from '../images/SignIn.png';
+import { useColorMode } from '@chakra-ui/react';
 
 interface FormData {
   username: string;
@@ -26,7 +27,8 @@ interface FormData {
 }
 
 export const Login = (): JSX.Element => {
-  const { t } = useTranslation('login');
+  const { t, i18n } = useTranslation('login');
+  const { colorMode, toggleColorMode } = useColorMode();
   const { handleSubmit, register } = useForm<FormData>({});
   const { setAccessToken, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -36,7 +38,6 @@ export const Login = (): JSX.Element => {
     setAccessToken,
     setUser,
   });
-
   const onSubmit = async (data: FormData) => {
     if (!setAccessToken || !setUser) {
       console.error(
@@ -61,12 +62,38 @@ export const Login = (): JSX.Element => {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('user', JSON.stringify(user));
 
+      // ✅ Fetch and apply ALL user settings immediately after login
+      const settings = await getWinSettings(user.id);
+      console.log('⚙️ Applying user settings:', settings);
+
+      // ✅ Apply Language
+      i18n.changeLanguage(settings.language);
+
+      // ✅ Apply Dark Mode
+      if (settings.darkMode && colorMode !== 'dark') toggleColorMode();
+      if (!settings.darkMode && colorMode !== 'light') toggleColorMode();
+
+      // ✅ Apply Notification Settings
+      localStorage.setItem(
+        'likeNotifications',
+        String(settings.likeNotifications),
+      );
+      localStorage.setItem(
+        'commentNotifications',
+        String(settings.commentNotifications),
+      );
+      localStorage.setItem(
+        'notificationRefreshRate',
+        settings.notificationRefreshRate,
+      );
+      window.dispatchEvent(new Event('refresh-rate-change'));
+
       setTimeout(() => {
         navigate('/');
       }, 300);
     } catch (error: any) {
       console.error('❌ Login failed:', error);
-      setErrors(['Login failed. Please try again.']);
+      setErrors([t('login_failed', 'Login failed. Please try again.')]);
     }
   };
 

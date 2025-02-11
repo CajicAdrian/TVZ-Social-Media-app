@@ -13,6 +13,7 @@ import {
   Textarea,
   Select,
   Avatar,
+  IconButton,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import VectorIcon from '../images/Vector.png';
@@ -20,12 +21,17 @@ import { LanguageMenu } from '../components/LanguageMenu';
 import { Layout } from '../components/Layout';
 import {
   getCurrentUser,
-  getUserSettings,
   updateUserSettings,
   uploadProfileImage,
   getAllUsers,
   updateUserRole,
+  deleteUser,
+  updateCommentNotifications,
+  updateLikeNotifications,
+  updateNotificationRefreshRate,
 } from 'api';
+import { DeleteIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: number;
@@ -40,8 +46,13 @@ interface User {
 export const Settings = (): JSX.Element => {
   const { t } = useTranslation('settings');
   const [selectedCategory, setSelectedCategory] = useState<
-    'edit-profile' | 'notification' | 'privacy' | 'security' | 'help' | 'roles'
+    'edit-profile' | 'notification' | 'help' | 'roles'
   >('edit-profile');
+  const [loadingSettings, setLoadingSettings] = useState(true);
+  const [settings, setSettings] = useState(() => {
+    return JSON.parse(localStorage.getItem('userSettings') || '{}');
+  });
+  const navigate = useNavigate();
 
   const [userData, setUserData] = useState<User>({
     id: 0,
@@ -54,7 +65,18 @@ export const Settings = (): JSX.Element => {
   });
 
   const [users, setUsers] = useState<User[]>([]);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [updatedRoles, setUpdatedRoles] = useState<{
+    [key: number]: 'ADMIN' | 'USER';
+  }>({});
+  const [likeNotifications, setLikeNotifications] = useState<boolean>(
+    localStorage.getItem('likeNotifications') === 'true',
+  );
+  const [commentNotifications, setCommentNotifications] = useState<boolean>(
+    localStorage.getItem('commentNotifications') === 'true',
+  );
+  const [notificationRefreshRate, setNotificationRefreshRate] =
+    useState<string>('30s');
+  const [loading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -81,6 +103,25 @@ export const Settings = (): JSX.Element => {
     fetchUserData();
     loadUsers();
   }, []);
+
+  useEffect(() => {
+    if (loadingSettings) {
+      console.log('⏳ Settings still loading, preventing navigation');
+      return;
+    }
+
+    if (!userData?.id && localStorage.getItem('user')) {
+      console.log(
+        '⚠️ User data missing, but found user in localStorage. Waiting...',
+      );
+      return;
+    }
+
+    if (!userData?.id) {
+      console.warn('⚠️ User data missing, redirecting to login');
+      navigate('/login');
+    }
+  }, [loadingSettings, userData?.id]);
 
   const handleFieldUpdate = async (field: keyof User, value: string) => {
     try {
@@ -129,9 +170,6 @@ export const Settings = (): JSX.Element => {
         profileImage: newProfileImage,
       }));
 
-      // ✅ Notify Navbar and other components to refresh the profile image
-      window.dispatchEvent(new Event('profileUpdated'));
-
       // ✅ Fetch latest user data after 1s delay to confirm backend save
       setTimeout(async () => {
         try {
@@ -146,9 +184,6 @@ export const Settings = (): JSX.Element => {
                 '',
               ),
             }));
-
-            // ✅ Dispatch event again in case of delayed updates
-            window.dispatchEvent(new Event('profileUpdated'));
           }
         } catch (error) {
           console.error('❌ Failed to refresh user data:', error);
@@ -156,6 +191,76 @@ export const Settings = (): JSX.Element => {
       }, 1000);
     } catch (error) {
       console.error('❌ Image upload failed:', error);
+    }
+  };
+
+  const handleRoleChange = (userId: number, newRole: 'ADMIN' | 'USER') => {
+    setUpdatedRoles((prev) => ({ ...prev, [userId]: newRole }));
+  };
+
+  const saveRoleChanges = async () => {
+    try {
+      await Promise.all(
+        Object.entries(updatedRoles).map(([userId, newRole]) =>
+          updateUserRole(Number(userId), newRole as 'ADMIN' | 'USER'),
+        ),
+      );
+      setUpdatedRoles({});
+    } catch (error) {
+      console.error('Error updating roles:', error);
+    }
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    if (window.confirm(t('Are you sure you want to delete this user?'))) {
+      try {
+        await deleteUser(userId);
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+      } catch (error) {
+        console.error('Error deleting user:', error);
+      }
+    }
+  };
+  const handleRefreshRateChange = async (rate: string) => {
+    console.log(`🔄 Updating refresh rate to: ${rate}`);
+
+    // ✅ Set state immediately
+    setNotificationRefreshRate(rate);
+
+    // ✅ Save to Windows Registry
+    await updateNotificationRefreshRate(userData.id, rate);
+
+    // ✅ Persist to localStorage
+    localStorage.setItem('notificationRefreshRate', rate);
+
+    // ✅ Dispatch global event to update notifications component instantly
+    window.dispatchEvent(new Event('refresh-rate-change'));
+  };
+
+  const handleToggleLikeNotifications = async () => {
+    try {
+      const newState = !likeNotifications;
+      setLikeNotifications(newState);
+      localStorage.setItem('likeNotifications', String(newState)); // ✅ Instant UI update
+
+      await updateLikeNotifications(userData.id, newState);
+      console.log('✅ Like Notifications updated in WinReg:', newState);
+    } catch (error) {
+      console.error('❌ Failed to update Like Notifications:', error);
+    }
+  };
+
+  // ✅ Toggle Comment Notifications (updates WinReg & cache)
+  const handleToggleCommentNotifications = async () => {
+    try {
+      const newState = !commentNotifications;
+      setCommentNotifications(newState);
+      localStorage.setItem('commentNotifications', String(newState)); // ✅ Instant UI update
+
+      await updateCommentNotifications(userData.id, newState);
+      console.log('✅ Comment Notifications updated in WinReg:', newState);
+    } catch (error) {
+      console.error('❌ Failed to update Comment Notifications:', error);
     }
   };
 
@@ -172,12 +277,6 @@ export const Settings = (): JSX.Element => {
             </Button>
             <Button onClick={() => setSelectedCategory('notification')}>
               {t('Notification')}
-            </Button>
-            <Button onClick={() => setSelectedCategory('privacy')}>
-              {t('Privacy')}
-            </Button>
-            <Button onClick={() => setSelectedCategory('security')}>
-              {t('Security')}
             </Button>
             <Button onClick={() => setSelectedCategory('help')}>
               {t('Help')}
@@ -292,12 +391,57 @@ export const Settings = (): JSX.Element => {
                 </Box>
                 <Box>
                   <Text fontWeight="bold">{t('Language')}:</Text>
-                  <LanguageMenu />
+                  {userData.id ? (
+                    <LanguageMenu userId={userData.id} />
+                  ) : (
+                    <Text>Loading...</Text>
+                  )}
                 </Box>
               </Stack>
             </Box>
           )}
+          {selectedCategory === 'notification' && (
+            <Box>
+              <Heading size="md" mb={4}>
+                {t('Notification Settings')}
+              </Heading>
 
+              <Stack spacing={5}>
+                <Flex align="center" justify="space-between">
+                  <Text>{t('Receive Like Notifications')}</Text>
+                  <input
+                    type="checkbox"
+                    checked={likeNotifications}
+                    disabled={loading}
+                    onChange={handleToggleLikeNotifications}
+                  />
+                </Flex>
+
+                <Flex align="center" justify="space-between">
+                  <Text>{t('Receive Comment Notifications')}</Text>
+                  <input
+                    type="checkbox"
+                    checked={commentNotifications}
+                    disabled={loading}
+                    onChange={handleToggleCommentNotifications}
+                  />
+                </Flex>
+
+                <Flex align="center" justify="space-between">
+                  <Text>{t('Notification Refresh Rate')}</Text>
+                  <Select
+                    w={'150px'}
+                    value={notificationRefreshRate}
+                    onChange={(e) => handleRefreshRateChange(e.target.value)}
+                  >
+                    <option value="10s">10s</option>
+                    <option value="30s">30s</option>
+                    <option value="1min">1 min</option>
+                  </Select>
+                </Flex>
+              </Stack>
+            </Box>
+          )}
           {selectedCategory === 'help' && (
             <Box>
               <Heading size="md">
@@ -318,33 +462,62 @@ export const Settings = (): JSX.Element => {
                   key={user.id}
                   align="center"
                   justify="space-between"
-                  p={3}
+                  p={4} // Padding for more spacing
                   borderBottom="1px solid gray"
+                  gap={4} // Adds space between items inside each row
                 >
-                  <Flex align="center">
-                    <Image
-                      borderRadius="full"
-                      boxSize="40px"
+                  {/* Avatar + Username */}
+                  <Flex align="center" gap={4}>
+                    <Avatar
+                      size="md"
+                      name={user.username}
+                      bg="lightblue"
                       src={
-                        user.profileImage || 'https://via.placeholder.com/40'
+                        user.profileImage &&
+                        !user.profileImage.includes('placeholder')
+                          ? `http://localhost:3000/${user.profileImage.replace(
+                              'static/',
+                              '',
+                            )}`
+                          : undefined
                       }
                     />
-                    <Text ml={3}>{user.username}</Text>
+                    <Text fontSize="md">{user.username}</Text>
                   </Flex>
+
+                  {/* Role Selection Dropdown - Pushed to the Right */}
                   <Select
-                    value={user.role}
+                    value={updatedRoles[user.id] || user.role}
                     onChange={(e) =>
-                      updateUserRole(
+                      handleRoleChange(
                         user.id,
                         e.target.value as 'ADMIN' | 'USER',
                       )
                     }
+                    width="120px"
+                    minWidth="80px"
+                    height="50px"
+                    ml="auto" // Pushes the dropdown to the right
                   >
                     <option value="USER">User</option>
                     <option value="ADMIN">Admin</option>
                   </Select>
+
+                  {/* Delete User Button */}
+                  <IconButton
+                    aria-label="Delete User"
+                    icon={<DeleteIcon />}
+                    colorScheme="red"
+                    size="md"
+                    ml={2} // Adds spacing so it doesn’t stick to the dropdown
+                  />
                 </Flex>
               ))}
+
+              {/* Save Changes Button */}
+              <Button mt={6} colorScheme="blue" onClick={saveRoleChanges}>
+                {t('Save Changes')}
+              </Button>
             </Box>
           )}
         </Box>

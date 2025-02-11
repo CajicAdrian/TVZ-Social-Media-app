@@ -12,20 +12,42 @@ import {
 } from '@chakra-ui/react';
 import { MdSettings, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { getCurrentUser } from 'api';
+import { getCurrentUser, updateUserTheme } from 'api';
 import { useTranslation } from 'react-i18next';
 import { Notifications } from './Notifications';
 import { AuthContext } from './AuthContext';
 
-export const LogoutButton = (): ReactElement => {
-  const { t } = useTranslation();
-  const { setAccessToken } = React.useContext(AuthContext);
+const LogoutButton = (): ReactElement => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   const logout = () => {
-    setAccessToken('');
+    console.log('🚪 Logging out...');
+
+    // ✅ Completely remove user session data
+    localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
+    localStorage.removeItem('userSettings');
+    localStorage.removeItem('language');
+    localStorage.removeItem('theme'); // ✅ Remove persistent theme
+    localStorage.removeItem('sessionTheme'); // ✅ Remove temporary theme override
+    localStorage.removeItem('likeNotifications');
+    localStorage.removeItem('commentNotifications');
+    localStorage.removeItem('notificationRefreshRate');
+
+    // ✅ Reset Language to English immediately
+    i18n.changeLanguage('en');
+
+    // ✅ Reset Dark Mode if Enabled
+    if (colorMode === 'dark') toggleColorMode();
+
+    window.dispatchEvent(new Event('refresh-rate-change')); // ✅ Ensures all settings update
+
     navigate('/');
+    setTimeout(() => {
+      window.location.reload(); // ✅ Ensures complete reset
+    }, 100);
   };
 
   return (
@@ -36,7 +58,7 @@ export const LogoutButton = (): ReactElement => {
 };
 
 export const Navbar = (): JSX.Element => {
-  const { toggleColorMode, colorMode } = useColorMode();
+  const { toggleColorMode, colorMode, setColorMode } = useColorMode();
   const { accessToken } = React.useContext(AuthContext);
   const { t } = useTranslation();
   const [user, setUser] = useState<{
@@ -72,6 +94,15 @@ export const Navbar = (): JSX.Element => {
       window.removeEventListener('profileUpdated', handleProfileUpdate);
     };
   }, [fetchUser]);
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme');
+
+    if (storedTheme && storedTheme !== colorMode) {
+      console.log(`🎨 Restoring stored theme: ${storedTheme}`);
+      setColorMode(storedTheme);
+    }
+  }, []);
 
   return (
     <Box>
@@ -118,7 +149,27 @@ export const Navbar = (): JSX.Element => {
             <Notifications />
 
             {/* ✅ DARK MODE BUTTON */}
-            <Button onClick={toggleColorMode} variant="ghost">
+            <Button
+              onClick={async () => {
+                const newMode = colorMode === 'dark' ? 'light' : 'dark';
+
+                console.log(
+                  `🎨 Navbar Dark Mode Toggle: ${newMode} (Before Toggle)`,
+                );
+
+                // ✅ Toggle UI instantly
+                toggleColorMode();
+
+                // ✅ Save in WinReg (persist across logins)
+                if (user) {
+                  await updateUserTheme(user.id, newMode);
+                  console.log(`✅ Saved theme to WinReg: ${newMode}`);
+                }
+
+                console.log(`🌙 Theme After Toggle: ${newMode}`);
+              }}
+              variant="ghost"
+            >
               {colorMode === 'light' ? (
                 <Icon as={MdDarkMode} w={6} h={6} />
               ) : (
