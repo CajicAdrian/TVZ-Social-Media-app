@@ -29,9 +29,13 @@ import {
   updateCommentNotifications,
   updateLikeNotifications,
   updateNotificationRefreshRate,
+  updateAdminUsername,
+  updateMaxUploadSize,
+  updateTokenExpirationTime,
 } from 'api';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
+import { useAppSettings } from '../hooks/useAppSettings';
 
 interface User {
   id: number;
@@ -46,13 +50,15 @@ interface User {
 export const Settings = (): JSX.Element => {
   const { t } = useTranslation('settings');
   const [selectedCategory, setSelectedCategory] = useState<
-    'edit-profile' | 'notification' | 'help' | 'roles'
+    'edit-profile' | 'notification' | 'help' | 'roles' | 'admin'
   >('edit-profile');
-  const [loadingSettings, setLoadingSettings] = useState(true);
+  const [loadingSettings] = useState(true);
+  const { appSettings, setAppSettings } = useAppSettings();
   const [settings, setSettings] = useState(() => {
     return JSON.parse(localStorage.getItem('userSettings') || '{}');
   });
   const navigate = useNavigate();
+  const [loading] = useState(false);
 
   const [userData, setUserData] = useState<User>({
     id: 0,
@@ -68,15 +74,6 @@ export const Settings = (): JSX.Element => {
   const [updatedRoles, setUpdatedRoles] = useState<{
     [key: number]: 'ADMIN' | 'USER';
   }>({});
-  const [likeNotifications, setLikeNotifications] = useState<boolean>(
-    localStorage.getItem('likeNotifications') === 'true',
-  );
-  const [commentNotifications, setCommentNotifications] = useState<boolean>(
-    localStorage.getItem('commentNotifications') === 'true',
-  );
-  const [notificationRefreshRate, setNotificationRefreshRate] =
-    useState<string>('30s');
-  const [loading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -103,6 +100,12 @@ export const Settings = (): JSX.Element => {
     fetchUserData();
     loadUsers();
   }, []);
+
+  useEffect(() => {
+    if (appSettings.adminUsername) {
+      console.log('✅ Admin Username Loaded:', appSettings.adminUsername);
+    }
+  }, [appSettings.adminUsername]);
 
   useEffect(() => {
     if (loadingSettings) {
@@ -225,7 +228,10 @@ export const Settings = (): JSX.Element => {
     console.log(`🔄 Updating refresh rate to: ${rate}`);
 
     // ✅ Set state immediately
-    setNotificationRefreshRate(rate);
+    setAppSettings((prev) => ({
+      ...prev, // Keep existing settings
+      notificationRefreshRate: rate, // Only update this field
+    }));
 
     // ✅ Save to Windows Registry
     await updateNotificationRefreshRate(userData.id, rate);
@@ -239,8 +245,11 @@ export const Settings = (): JSX.Element => {
 
   const handleToggleLikeNotifications = async () => {
     try {
-      const newState = !likeNotifications;
-      setLikeNotifications(newState);
+      const newState = !appSettings.likeNotifications;
+      setAppSettings((prev) => ({
+        ...prev,
+        likeNotifications: newState, // ✅ Ensure the whole object is updated
+      }));
       localStorage.setItem('likeNotifications', String(newState)); // ✅ Instant UI update
 
       await updateLikeNotifications(userData.id, newState);
@@ -253,14 +262,55 @@ export const Settings = (): JSX.Element => {
   // ✅ Toggle Comment Notifications (updates WinReg & cache)
   const handleToggleCommentNotifications = async () => {
     try {
-      const newState = !commentNotifications;
-      setCommentNotifications(newState);
+      const newState = !appSettings.commentNotifications;
+      setAppSettings((prev) => ({
+        ...prev,
+        commentNotifications: newState, // ✅ Ensure the whole object is updated
+      }));
       localStorage.setItem('commentNotifications', String(newState)); // ✅ Instant UI update
 
       await updateCommentNotifications(userData.id, newState);
       console.log('✅ Comment Notifications updated in WinReg:', newState);
     } catch (error) {
       console.error('❌ Failed to update Comment Notifications:', error);
+    }
+  };
+  const handleAdminUsernameChange = async (newUsername: string) => {
+    try {
+      await updateAdminUsername(newUsername);
+      setAppSettings((prev: typeof settings) => ({
+        ...prev,
+        adminUsername: newUsername,
+      })); // ✅ Update State
+      console.log('✅ Admin Username updated:', newUsername);
+    } catch (error) {
+      console.error('❌ Failed to update Admin Username:', error);
+    }
+  };
+
+  const handleMaxUploadSizeChange = async (size: string) => {
+    try {
+      await updateMaxUploadSize(size);
+      setAppSettings((prev: typeof settings) => ({
+        ...prev,
+        maxUploadSize: size,
+      })); // ✅ Update State
+      console.log('✅ Max Upload Size updated:', size);
+    } catch (error) {
+      console.error('❌ Failed to update Max Upload Size:', error);
+    }
+  };
+
+  const handleTokenExpirationChange = async (time: string) => {
+    try {
+      await updateTokenExpirationTime(time);
+      setAppSettings((prev: typeof settings) => ({
+        ...prev,
+        tokenExpirationTime: time,
+      })); // ✅ Update State
+      console.log('✅ Token Expiration Time updated:', time);
+    } catch (error) {
+      console.error('❌ Failed to update Token Expiration Time:', error);
     }
   };
 
@@ -283,6 +333,9 @@ export const Settings = (): JSX.Element => {
             </Button>
             <Button onClick={() => setSelectedCategory('roles')}>
               {t('Roles')}
+            </Button>
+            <Button onClick={() => setSelectedCategory('admin')}>
+              {t('Admin Settings')}
             </Button>
           </Stack>
         </Box>
@@ -411,7 +464,7 @@ export const Settings = (): JSX.Element => {
                   <Text>{t('Receive Like Notifications')}</Text>
                   <input
                     type="checkbox"
-                    checked={likeNotifications}
+                    checked={appSettings.likeNotifications}
                     disabled={loading}
                     onChange={handleToggleLikeNotifications}
                   />
@@ -421,7 +474,7 @@ export const Settings = (): JSX.Element => {
                   <Text>{t('Receive Comment Notifications')}</Text>
                   <input
                     type="checkbox"
-                    checked={commentNotifications}
+                    checked={appSettings.commentNotifications}
                     disabled={loading}
                     onChange={handleToggleCommentNotifications}
                   />
@@ -431,7 +484,7 @@ export const Settings = (): JSX.Element => {
                   <Text>{t('Notification Refresh Rate')}</Text>
                   <Select
                     w={'150px'}
-                    value={notificationRefreshRate}
+                    value={appSettings.notificationRefreshRate}
                     onChange={(e) => handleRefreshRateChange(e.target.value)}
                   >
                     <option value="10s">10s</option>
@@ -518,6 +571,66 @@ export const Settings = (): JSX.Element => {
               <Button mt={6} colorScheme="blue" onClick={saveRoleChanges}>
                 {t('Save Changes')}
               </Button>
+            </Box>
+          )}
+          {selectedCategory === 'admin' && (
+            <Box>
+              <Heading size="md" mb={4}>
+                Admin Settings
+              </Heading>
+
+              {/* ✅ Admin Username */}
+              <Flex align="center" mb={4}>
+                <Text fontWeight="bold" flex="1">
+                  Admin Username:
+                </Text>
+                <Input
+                  value={appSettings.adminUsername || ''}
+                  onChange={(e) =>
+                    setAppSettings((prev) => ({
+                      ...prev,
+                      adminUsername: e.target.value,
+                    }))
+                  }
+                  variant="outline"
+                  width="200px"
+                  onBlur={() =>
+                    handleAdminUsernameChange(appSettings.adminUsername)
+                  }
+                />
+              </Flex>
+
+              {/* ✅ Max Upload Size */}
+              <Flex align="center" mb={4}>
+                <Text fontWeight="bold" flex="1">
+                  Max Upload Size:
+                </Text>
+                <Select
+                  value={settings.maxUploadSize || '10MB'}
+                  onChange={(e) => handleMaxUploadSizeChange(e.target.value)}
+                  width="150px"
+                >
+                  <option value="10KB">10KB</option>
+                  <option value="100KB">100KB</option>
+                  <option value="1024KB">1MB</option>
+                </Select>
+              </Flex>
+
+              {/* ✅ Token Expiration Time */}
+              <Flex align="center">
+                <Text fontWeight="bold" flex="1">
+                  Token Expiration Time:
+                </Text>
+                <Select
+                  value={settings.tokenExpirationTime || '3600s'}
+                  onChange={(e) => handleTokenExpirationChange(e.target.value)}
+                  width="150px"
+                >
+                  <option value="360">360s</option>
+                  <option value="3600">3600s</option>
+                  <option value="7200">7200s</option>
+                </Select>
+              </Flex>
             </Box>
           )}
         </Box>

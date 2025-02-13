@@ -41,3 +41,7 @@ export { updateUserLanguage } from './update-user-language.api';
 export { getUserTheme } from './get-user-theme.api';
 export { updateUserTheme } from './update-user-theme.api';
 export { getWinSettings } from './get-win-settings.api';
+export { getIniSettings } from './get-ini-settings.api';
+export { updateAdminUsername } from './update-admin-username.api';
+export { updateMaxUploadSize } from './update-max-upload-size.api';
+export { updateTokenExpirationTime } from './update-token-expiration.api';

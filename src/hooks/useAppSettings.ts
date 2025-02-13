@@ -5,6 +5,7 @@ import {
   getUserLanguage,
   getLikeNotifications,
   getCommentNotifications,
+  getIniSettings,
 } from 'api';
 import { useTranslation } from 'react-i18next';
 import { useColorMode } from '@chakra-ui/react';
@@ -14,12 +15,15 @@ export const useAppSettings = (userId?: number) => {
   const { setColorMode } = useColorMode();
 
   // ✅ State for settings
-  const [settings, setSettings] = useState({
+  const [appSettings, setAppSettings] = useState({
     language: 'en',
     darkMode: 'light',
     notificationRefreshRate: '30s',
     likeNotifications: true,
     commentNotifications: true,
+    adminUsername: '',
+    maxUploadSize: '10MB',
+    tokenExpirationTime: '3600s',
   });
 
   useEffect(() => {
@@ -38,7 +42,7 @@ export const useAppSettings = (userId?: number) => {
           setColorMode(theme);
 
           // ✅ Save in State
-          setSettings((prev) => ({ ...prev, darkMode: theme }));
+          setAppSettings((prev) => ({ ...prev, darkMode: theme }));
         });
 
         // ✅ Fetch Language & Apply Immediately
@@ -46,32 +50,45 @@ export const useAppSettings = (userId?: number) => {
           if (userLanguage) {
             console.log(`🌍 Applying language from WinReg: ${userLanguage}`);
             i18n.changeLanguage(userLanguage);
-            setSettings((prev) => ({ ...prev, language: userLanguage }));
+            setAppSettings((prev) => ({ ...prev, language: userLanguage }));
           }
         });
 
         // ✅ Fetch Other Settings in Parallel
-        const [userRefreshRate, likeNotifications, commentNotifications] =
-          await Promise.all([
-            getNotificationRefreshRate(userId),
-            getLikeNotifications(userId),
-            getCommentNotifications(userId),
-          ]);
-
-        // ✅ Apply Notification Settings **Separately**
-        setSettings((prev) => ({
-          ...prev,
-          notificationRefreshRate: userRefreshRate || '30s',
+        const [
+          userRefreshRate,
           likeNotifications,
           commentNotifications,
+          iniSettings,
+        ] = await Promise.all([
+          getNotificationRefreshRate(userId),
+          getLikeNotifications(userId),
+          getCommentNotifications(userId),
+          getIniSettings(),
+        ]);
+
+        console.log('Loaded INI Settings:', iniSettings);
+
+        // ✅ Apply Notification Settings **Separately**
+        setAppSettings((prev) => ({
+          ...prev,
+          notificationRefreshRate: userRefreshRate || '30s',
+          likeNotifications: likeNotifications ?? true,
+          commentNotifications: commentNotifications ?? true,
+          adminUsername: iniSettings.adminUsername || 'DomV',
+          maxUploadSize: iniSettings.maxUploadSize || '10MB',
+          tokenExpirationTime: `${iniSettings.tokenExpirationTime}s` || '3600s',
         }));
 
         console.log('✅ Settings Applied:', {
-          darkMode: settings.darkMode,
-          language: settings.language,
+          darkMode: appSettings.darkMode,
+          language: appSettings.language,
           notificationRefreshRate: userRefreshRate,
           likeNotifications,
           commentNotifications,
+          adminUsername: iniSettings.adminUsername || 'DomV',
+          maxUploadSize: iniSettings.maxUploadSize || '10MB',
+          tokenExpirationTime: `${iniSettings.tokenExpirationTime}s` || '3600s',
         });
       } catch (error) {
         console.error('❌ Failed to load settings:', error);
@@ -81,5 +98,5 @@ export const useAppSettings = (userId?: number) => {
     applySettings();
   }, [userId]);
 
-  return { settings };
+  return { appSettings, setAppSettings };
 };

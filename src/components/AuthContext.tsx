@@ -46,7 +46,7 @@ export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   );
 
   // ✅ Integrate App Settings
-  const { settings } = useAppSettings(user?.id);
+  const { appSettings } = useAppSettings(user?.id);
   const { i18n } = useTranslation();
   const { colorMode, setColorMode } = useColorMode();
 
@@ -79,20 +79,22 @@ export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      console.log('⚙️ Applying user settings on login:', settings);
+      console.log('⚙️ Applying user settings on login:', appSettings);
 
       // ✅ Apply Language (but don't reset it on dark mode toggle)
-      if (settings.language && settings.language !== i18n.language) {
-        i18n.changeLanguage(settings.language);
+      if (appSettings.language && appSettings.language !== i18n.language) {
+        i18n.changeLanguage(appSettings.language);
       }
 
       // ✅ Apply Dark Mode from WinReg (Only on login)
-      if (settings.darkMode !== colorMode) {
-        console.log(`🎨 Applying dark mode from WinReg: ${settings.darkMode}`);
-        setColorMode(settings.darkMode);
+      if (appSettings.darkMode !== colorMode) {
+        console.log(
+          `🎨 Applying dark mode from WinReg: ${appSettings.darkMode}`,
+        );
+        setColorMode(appSettings.darkMode);
       }
     }
-  }, [user, settings.language, settings.darkMode, i18n]);
+  }, [user, appSettings.language, appSettings.darkMode, i18n]);
 
   return (
     <AuthContext.Provider
