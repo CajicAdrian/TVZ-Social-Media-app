@@ -45,3 +45,4 @@ export { getIniSettings } from './get-ini-settings.api';
 export { updateAdminUsername } from './update-admin-username.api';
 export { updateMaxUploadSize } from './update-max-upload-size.api';
 export { updateTokenExpirationTime } from './update-token-expiration.api';
+export { changeUserPassword } from './change-password.api';

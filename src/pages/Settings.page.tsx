@@ -32,6 +32,7 @@ import {
   updateAdminUsername,
   updateMaxUploadSize,
   updateTokenExpirationTime,
+  changeUserPassword,
 } from 'api';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
@@ -50,7 +51,7 @@ interface User {
 export const Settings = (): JSX.Element => {
   const { t } = useTranslation('settings');
   const [selectedCategory, setSelectedCategory] = useState<
-    'edit-profile' | 'notification' | 'help' | 'roles' | 'admin'
+    'edit-profile' | 'notification' | 'security' | 'help' | 'roles' | 'admin'
   >('edit-profile');
   const [loadingSettings] = useState(true);
   const { appSettings, setAppSettings } = useAppSettings();
@@ -76,9 +77,9 @@ export const Settings = (): JSX.Element => {
   });
 
   const [users, setUsers] = useState<User[]>([]);
-  const [updatedRoles, setUpdatedRoles] = useState<{
-    [key: number]: 'ADMIN' | 'USER';
-  }>({});
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -328,6 +329,23 @@ export const Settings = (): JSX.Element => {
       console.error('❌ Failed to update Token Expiration Time:', error);
     }
   };
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      alert(t('New password and confirmation do not match.'));
+      return;
+    }
+
+    try {
+      await changeUserPassword(currentPassword, newPassword);
+      alert(t('Password changed successfully!'));
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      console.error('❌ Error changing password:', error);
+      alert(t('Failed to change password. Please try again.'));
+    }
+  };
 
   return (
     <Layout
@@ -346,19 +364,18 @@ export const Settings = (): JSX.Element => {
             <Button onClick={() => setSelectedCategory('help')}>
               {t('Help')}
             </Button>
-
-            {/* ✅ Show "Roles" button only for admins */}
+            <Button onClick={() => setSelectedCategory('security')}>
+              {t('Security')}
+            </Button>
             {userData.role === 'ADMIN' && (
-              <Button onClick={() => setSelectedCategory('roles')}>
-                {t('Roles')}
-              </Button>
-            )}
-
-            {/* ✅ Show "Admin Settings" button only for admins */}
-            {userData.role === 'ADMIN' && (
-              <Button onClick={() => setSelectedCategory('admin')}>
-                {t('Admin Settings')}
-              </Button>
+              <>
+                <Button onClick={() => setSelectedCategory('roles')}>
+                  {t('Roles')}
+                </Button>
+                <Button onClick={() => setSelectedCategory('admin')}>
+                  {t('Admin Settings')}
+                </Button>
+              </>
             )}
           </Stack>
         </Box>
@@ -516,6 +533,57 @@ export const Settings = (): JSX.Element => {
                   </Select>
                 </Flex>
               </Stack>
+            </Box>
+          )}
+          {selectedCategory === 'security' && (
+            <Box>
+              <Heading size="md" mb={4}>
+                {t('Security')}
+              </Heading>
+
+              {/* Change Password Form */}
+              <Box>
+                <Text fontWeight="bold">{t('Current Password')}:</Text>
+                <Input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                />
+
+                <Text fontWeight="bold" mt={3}>
+                  {t('New Password')}:
+                </Text>
+                <Input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+
+                <Text fontWeight="bold" mt={3}>
+                  {t('Confirm New Password')}:
+                </Text>
+                <Input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+
+                <Button
+                  mt={4}
+                  colorScheme="blue"
+                  isDisabled={
+                    !currentPassword ||
+                    !newPassword ||
+                    newPassword !== confirmPassword
+                  }
+                  onClick={handleChangePassword}
+                >
+                  {t('Change Password')}
+                </Button>
+              </Box>
             </Box>
           )}
           {selectedCategory === 'help' && (
