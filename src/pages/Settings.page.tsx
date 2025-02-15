@@ -54,9 +54,14 @@ export const Settings = (): JSX.Element => {
   >('edit-profile');
   const [loadingSettings] = useState(true);
   const { appSettings, setAppSettings } = useAppSettings();
-  const [settings, setSettings] = useState(() => {
-    return JSON.parse(localStorage.getItem('userSettings') || '{}');
-  });
+
+  // ✅ Load settings directly from localStorage (so UI doesn't show defaults)
+  const storedSettings = JSON.parse(
+    localStorage.getItem('userSettings') || '{}',
+  );
+
+  // ✅ Fallback to appSettings if localStorage isn't available
+  const settings = { ...storedSettings, ...appSettings };
   const navigate = useNavigate();
   const [loading] = useState(false);
 
@@ -100,6 +105,10 @@ export const Settings = (): JSX.Element => {
     fetchUserData();
     loadUsers();
   }, []);
+
+  useEffect(() => {
+    console.log('🔄 FULL appSettings State:', appSettings);
+  }, [appSettings]);
 
   useEffect(() => {
     if (appSettings.adminUsername) {
@@ -197,20 +206,26 @@ export const Settings = (): JSX.Element => {
     }
   };
 
-  const handleRoleChange = (userId: number, newRole: 'ADMIN' | 'USER') => {
-    setUpdatedRoles((prev) => ({ ...prev, [userId]: newRole }));
-  };
-
-  const saveRoleChanges = async () => {
+  const handleRoleChange = async (
+    userId: number,
+    newRole: 'ADMIN' | 'USER',
+  ) => {
     try {
-      await Promise.all(
-        Object.entries(updatedRoles).map(([userId, newRole]) =>
-          updateUserRole(Number(userId), newRole as 'ADMIN' | 'USER'),
+      console.log(`🔄 Changing role of user ${userId} to ${newRole}...`);
+
+      // ✅ Immediately update the backend
+      await updateUserRole(userId, newRole);
+
+      // ✅ Update the UI instantly
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, role: newRole } : user,
         ),
       );
-      setUpdatedRoles({});
+
+      console.log(`✅ Role updated successfully!`);
     } catch (error) {
-      console.error('Error updating roles:', error);
+      console.error('❌ Error updating role:', error);
     }
   };
 
@@ -228,7 +243,7 @@ export const Settings = (): JSX.Element => {
     console.log(`🔄 Updating refresh rate to: ${rate}`);
 
     // ✅ Set state immediately
-    setAppSettings((prev) => ({
+    setAppSettings((prev: typeof settings) => ({
       ...prev, // Keep existing settings
       notificationRefreshRate: rate, // Only update this field
     }));
@@ -246,7 +261,7 @@ export const Settings = (): JSX.Element => {
   const handleToggleLikeNotifications = async () => {
     try {
       const newState = !appSettings.likeNotifications;
-      setAppSettings((prev) => ({
+      setAppSettings((prev: typeof settings) => ({
         ...prev,
         likeNotifications: newState, // ✅ Ensure the whole object is updated
       }));
@@ -263,7 +278,7 @@ export const Settings = (): JSX.Element => {
   const handleToggleCommentNotifications = async () => {
     try {
       const newState = !appSettings.commentNotifications;
-      setAppSettings((prev) => ({
+      setAppSettings((prev: typeof settings) => ({
         ...prev,
         commentNotifications: newState, // ✅ Ensure the whole object is updated
       }));
@@ -278,7 +293,7 @@ export const Settings = (): JSX.Element => {
   const handleAdminUsernameChange = async (newUsername: string) => {
     try {
       await updateAdminUsername(newUsername);
-      setAppSettings((prev: typeof settings) => ({
+      setAppSettings((prev: typeof appSettings) => ({
         ...prev,
         adminUsername: newUsername,
       })); // ✅ Update State
@@ -331,12 +346,20 @@ export const Settings = (): JSX.Element => {
             <Button onClick={() => setSelectedCategory('help')}>
               {t('Help')}
             </Button>
-            <Button onClick={() => setSelectedCategory('roles')}>
-              {t('Roles')}
-            </Button>
-            <Button onClick={() => setSelectedCategory('admin')}>
-              {t('Admin Settings')}
-            </Button>
+
+            {/* ✅ Show "Roles" button only for admins */}
+            {userData.role === 'ADMIN' && (
+              <Button onClick={() => setSelectedCategory('roles')}>
+                {t('Roles')}
+              </Button>
+            )}
+
+            {/* ✅ Show "Admin Settings" button only for admins */}
+            {userData.role === 'ADMIN' && (
+              <Button onClick={() => setSelectedCategory('admin')}>
+                {t('Admin Settings')}
+              </Button>
+            )}
           </Stack>
         </Box>
       }
@@ -540,7 +563,7 @@ export const Settings = (): JSX.Element => {
 
                   {/* Role Selection Dropdown - Pushed to the Right */}
                   <Select
-                    value={updatedRoles[user.id] || user.role}
+                    value={user.role}
                     onChange={(e) =>
                       handleRoleChange(
                         user.id,
@@ -550,7 +573,7 @@ export const Settings = (): JSX.Element => {
                     width="120px"
                     minWidth="80px"
                     height="50px"
-                    ml="auto" // Pushes the dropdown to the right
+                    ml="auto"
                   >
                     <option value="USER">User</option>
                     <option value="ADMIN">Admin</option>
@@ -563,14 +586,10 @@ export const Settings = (): JSX.Element => {
                     colorScheme="red"
                     size="md"
                     ml={2} // Adds spacing so it doesn’t stick to the dropdown
+                    onClick={() => handleDeleteUser(user.id)} // ✅ Pass user.id
                   />
                 </Flex>
               ))}
-
-              {/* Save Changes Button */}
-              <Button mt={6} colorScheme="blue" onClick={saveRoleChanges}>
-                {t('Save Changes')}
-              </Button>
             </Box>
           )}
           {selectedCategory === 'admin' && (
@@ -587,7 +606,7 @@ export const Settings = (): JSX.Element => {
                 <Input
                   value={appSettings.adminUsername || ''}
                   onChange={(e) =>
-                    setAppSettings((prev) => ({
+                    setAppSettings((prev: typeof settings) => ({
                       ...prev,
                       adminUsername: e.target.value,
                     }))
@@ -606,7 +625,7 @@ export const Settings = (): JSX.Element => {
                   Max Upload Size:
                 </Text>
                 <Select
-                  value={settings.maxUploadSize || '10MB'}
+                  value={appSettings.maxUploadSize || '10MB'}
                   onChange={(e) => handleMaxUploadSizeChange(e.target.value)}
                   width="150px"
                 >
@@ -622,7 +641,7 @@ export const Settings = (): JSX.Element => {
                   Token Expiration Time:
                 </Text>
                 <Select
-                  value={settings.tokenExpirationTime || '3600s'}
+                  value={appSettings.tokenExpirationTime || '3600s'}
                   onChange={(e) => handleTokenExpirationChange(e.target.value)}
                   width="150px"
                 >
