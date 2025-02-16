@@ -9,6 +9,7 @@ import {
   Flex,
   Avatar,
   useOutsideClick,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import {
   getAllUsersExceptMe,
@@ -24,6 +25,11 @@ export const Chat = ({ userId }: { userId: number }) => {
   const [currentUser, setCurrentUser] = useState<ApiUser | null>(null);
   const [messages, setMessages] = useState<ApiMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
+
+  const bgColor = useColorModeValue('gray.100', 'gray.900'); // Chat background
+  const textColor = useColorModeValue('black', 'white'); // Message section background
+  const bubbleBg = useColorModeValue('blue.100', 'blue.800'); // Chat bubbles
+  const bubbleBg2 = useColorModeValue('gray.100', 'gray.800'); // Chat bubbles
 
   const chatRef = React.useRef(null);
 
@@ -96,7 +102,7 @@ export const Chat = ({ userId }: { userId: number }) => {
       left="0"
       w="100%"
       zIndex="1000"
-      bg="lightblue"
+      bg={bubbleBg}
       ref={chatRef}
     >
       {!isOpen ? (
@@ -104,15 +110,15 @@ export const Chat = ({ userId }: { userId: number }) => {
           w="15%"
           h="50px"
           m={5}
-          bg="lightblue"
-          color="white"
+          bg={bgColor}
+          color={textColor}
           fontSize="lg"
           onClick={toggleChat}
         >
           Talk to friends
         </Button>
       ) : (
-        <Box h="calc(100vh - 50px)" bg="white" p={4}>
+        <Box h="calc(100vh - 50px)" bg={bgColor} p={4}>
           {!currentUser ? (
             <VStack spacing={2} overflowY="auto" h="100%" alignItems="stretch">
               {users.map((user) => (
@@ -120,8 +126,8 @@ export const Chat = ({ userId }: { userId: number }) => {
                   key={user.id}
                   w="15%"
                   px={4}
-                  py={2}
-                  bg="gray.100"
+                  py={3}
+                  bg={bubbleBg}
                   borderRadius="md"
                   cursor="pointer"
                   _hover={{ bg: 'gray.200' }}
@@ -163,9 +169,10 @@ export const Chat = ({ userId }: { userId: number }) => {
                     mb={2}
                   >
                     <Box
-                      bg={msg.senderId === userId ? 'blue.100' : 'gray.100'}
+                      bg={msg.senderId === userId ? bubbleBg : bubbleBg2}
                       borderRadius="md"
                       p={2}
+                      m={2}
                       maxW="70%"
                       wordBreak="break-word"
                       mr={msg.senderId === userId ? '10px' : 'auto'} // Margin to the right for sender
@@ -179,6 +186,7 @@ export const Chat = ({ userId }: { userId: number }) => {
               <HStack w="100%" spacing={2} mt={2}>
                 <Input
                   value={newMessage}
+                  bg={bubbleBg}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
                   w="10%"

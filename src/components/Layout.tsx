@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, useColorModeValue } from '@chakra-ui/react';
 
 interface LayoutProps {
   leftContent: React.ReactNode;
@@ -10,12 +10,15 @@ export const Layout = ({
   leftContent,
   rightContent,
 }: LayoutProps): JSX.Element => {
+  const bgLeftColor = useColorModeValue('blue.200', 'gray.900'); // Light mode = blue, Dark mode = dark gray
+  const bgRightColor = useColorModeValue('white', 'blue.900'); // Light mode = blue, Dark mode = dark gray
+  const textColor = useColorModeValue('black', 'white');
   return (
     <Box display="grid" gridTemplateColumns="20rem 1fr" position="relative">
       {/* Left Section */}
       <Box
-        bg="blue.200"
-        color="black"
+        bg={bgLeftColor}
+        color={textColor}
         position="fixed"
         top="0" /* Box stays fixed at the very top */
         left="0"
@@ -31,7 +34,8 @@ export const Layout = ({
       {/* Right Section */}
       <Box
         ml="20rem" /* Pushes content to the right of the sidebar */
-        bg="gray.100"
+        bg={bgRightColor}
+        color={textColor}
         position="fixed" /* Keeps the box fixed in place */
         top="0" /* Box stays fixed at the very top */
         h="100vh" /* Full viewport height */

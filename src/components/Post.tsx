@@ -7,6 +7,7 @@ import {
   Avatar,
   Image,
   Button,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Likes } from './Likes'; // Import the customized Likes component
@@ -47,12 +48,15 @@ export function Post({
 }: Props): JSX.Element {
   const { t } = useTranslation('feed');
 
+  const bgColor = useColorModeValue('gray.100', 'gray.800'); // Post background
+  const textColor = useColorModeValue('black', 'white'); // Text color
+
   return (
     <Center py={6} w="full">
       <Box
         maxW={'40rem'}
         w={'full'}
-        bg={'white'}
+        bg={bgColor}
         boxShadow={'2xl'}
         rounded={'md'}
         overflow={'hidden'}
@@ -77,23 +81,25 @@ export function Post({
             />
 
             <Box>
-              <Text fontWeight="bold" fontSize="lg">
+              <Text color={textColor} fontWeight="bold" fontSize="lg">
                 {username} - {title}
               </Text>
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color={textColor}>
                 {description}
               </Text>
             </Box>
           </Flex>
           {onEdit && (
-            <Button onClick={onEdit} size="sm" variant="outline">
-              {t('edit')}
-            </Button>
+            <Box ml="auto">
+              <Button onClick={onEdit} size="sm" variant="outline">
+                <Text color={textColor}>{t('edit')}</Text>
+              </Button>
+            </Box>
           )}
         </Flex>
 
         {/* Image Section */}
-        <Box bg={'gray.100'} mx={-6} mb={6} pos={'relative'}>
+        <Box mx={-6} mb={6} pos={'relative'}>
           <Image
             src={`http://localhost:3000/images/post-images/${image.fileName}`}
             alt="Post image"

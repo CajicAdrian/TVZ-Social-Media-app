@@ -1,9 +1,34 @@
-import { VStack, Spinner, Text, Box, Avatar, Center } from '@chakra-ui/react';
+import {
+  VStack,
+  Spinner,
+  Text,
+  Avatar,
+  Center,
+  useDisclosure,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { Layout } from '../components/Layout';
 import { Post } from '../components/Post';
 import { useAsyncRetry } from 'react-use';
-import { getPostsByUser, getCurrentUser, ApiPost } from 'api';
+import {
+  getPostsByUser,
+  getCurrentUser,
+  ApiPost,
+  updatePost,
+  deletePost,
+} from 'api';
 import React, { useEffect, useState } from 'react';
+import { PostFormModal } from 'components';
+
+interface FormData {
+  title: string;
+  description: string;
+  image: FileList;
+}
+
+type EditState =
+  | { mode: 'create' }
+  | { mode: 'edit'; postId: number; data: Partial<FormData> };
 
 export const Profile = (): JSX.Element => {
   const [user, setUser] = useState<{
@@ -13,6 +38,10 @@ export const Profile = (): JSX.Element => {
     bio?: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [edit, setEdit] = useState<EditState | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const textColor = useColorModeValue('black', 'white'); // Text color
 
   // ✅ Fetch user on mount
   useEffect(() => {
@@ -46,6 +75,36 @@ export const Profile = (): JSX.Element => {
     }
   }, [user?.id]); // ✅ Dependency added to re-fetch if user ID changes
 
+  useEffect(() => {
+    if (edit) {
+      onOpen();
+    } else {
+      onClose();
+    }
+  }, [edit]);
+
+  const cancelEdit = () => {
+    setEdit(null);
+  };
+
+  const onSubmit = async (data: FormData) => {
+    if (edit?.mode === 'edit') {
+      await updatePost(edit.postId, data);
+      onClose();
+      retry();
+    }
+  };
+
+  const onDelete = async () => {
+    if (edit?.mode !== 'edit') {
+      throw new Error("Can't delete post, not editing");
+    }
+
+    await deletePost(edit.postId);
+    onClose();
+    retry();
+  };
+
   return (
     <Layout
       leftContent={
@@ -70,12 +129,12 @@ export const Profile = (): JSX.Element => {
               />
 
               {/* ✅ Username */}
-              <Text fontSize="2xl" fontWeight="bold">
+              <Text color={textColor} fontSize="2xl" fontWeight="bold">
                 {user.username}
               </Text>
 
               {/* ✅ Bio */}
-              <Text fontSize="md" color="gray.600" mt={2}>
+              <Text fontSize="md" color={textColor} mt={2}>
                 {user.bio || 'No bio available'}
               </Text>
             </>
@@ -94,6 +153,17 @@ export const Profile = (): JSX.Element => {
           )}
           {!loading && !error && posts.length === 0 && (
             <Text alignSelf="center">No posts available</Text>
+          )}
+          {/* Post Form Modal */}
+          {edit && (
+            <PostFormModal
+              mode={edit.mode}
+              isOpen={isOpen}
+              onClose={cancelEdit}
+              value={edit.mode === 'edit' ? edit.data : {}}
+              onSubmit={onSubmit}
+              onDelete={onDelete}
+            />
           )}
           {!loading && !error && (
             <VStack spacing="1rem">
@@ -116,6 +186,9 @@ export const Profile = (): JSX.Element => {
                   likeCount={post.likeCount}
                   likedByCurrentUser={post.likedByCurrentUser}
                   onChange={retry}
+                  onEdit={() =>
+                    setEdit({ mode: 'edit', postId: post.id, data: post })
+                  } // ✅ This enables the Edit button
                 />
               ))}
             </VStack>

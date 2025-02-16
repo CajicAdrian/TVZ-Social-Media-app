@@ -10,6 +10,7 @@ import {
   ModalContent,
   ModalOverlay,
   Stack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { ReactElement, useState } from 'react';
@@ -55,13 +56,16 @@ export const PostFormModal = ({
     defaultValues: value,
   });
 
+  const bgColor = useColorModeValue('gray.100', 'gray.800'); // Post background
+  const textColor = useColorModeValue('black', 'white'); // Text color
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent bg={bgColor} color={textColor}>
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Box rounded={'lg'} bg={'white'} boxShadow={'lg'} p={8}>
+            <Box rounded={'lg'} boxShadow={'lg'} p={8}>
               <Stack spacing={4}>
                 {mode === 'edit' && (
                   <Button colorScheme="red" size="sm" onClick={onDelete}>

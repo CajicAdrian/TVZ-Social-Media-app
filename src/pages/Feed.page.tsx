@@ -134,6 +134,9 @@ export const Feed = (): JSX.Element => {
                   likeCount={post.likeCount}
                   likedByCurrentUser={post.likedByCurrentUser}
                   onChange={retry}
+                  onEdit={() =>
+                    setEdit({ mode: 'edit', postId: post.id, data: post })
+                  } // ✅ This enables the Edit button
                 />
               ))}
             </VStack>
