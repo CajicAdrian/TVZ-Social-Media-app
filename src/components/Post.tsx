@@ -21,6 +21,7 @@ interface ImageProps {
 
 interface Props {
   postId: number;
+  userId: number;
   username: string;
   image: ImageProps;
   profileImage?: string;
@@ -35,6 +36,7 @@ interface Props {
 
 export function Post({
   postId,
+  userId,
   username,
   description,
   image,
@@ -129,6 +131,7 @@ export function Post({
         <Flex justifyContent="flex-start" alignItems="center" mb={4} px={6}>
           <Comments
             postId={postId}
+            userId={userId}
             commentCount={commentCount}
             onChange={onChange}
           />

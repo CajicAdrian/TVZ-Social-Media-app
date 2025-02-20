@@ -119,6 +119,7 @@ export const Feed = (): JSX.Element => {
                 <Post
                   key={post.id}
                   postId={post.id}
+                  userId={user?.id}
                   title={post.title}
                   description={post.description}
                   image={

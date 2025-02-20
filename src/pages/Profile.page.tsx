@@ -171,6 +171,7 @@ export const Profile = (): JSX.Element => {
                 <Post
                   key={post.id}
                   postId={post.id}
+                  userId={user?.id || 0}
                   title={post.title}
                   description={post.description}
                   image={

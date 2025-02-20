@@ -3,7 +3,11 @@ import { api } from './api';
 export interface ApiComment {
   id: number;
   content: string;
-  user: string;
+  createdAt: string; // ✅ Ensure timestamp is included
+  user: {
+    id: number;
+    name: string;
+  };
 }
 
 export const getComments = async (postId: number): Promise<ApiComment[]> => {

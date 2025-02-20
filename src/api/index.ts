@@ -46,3 +46,5 @@ export { updateAdminUsername } from './update-admin-username.api';
 export { updateMaxUploadSize } from './update-max-upload-size.api';
 export { updateTokenExpirationTime } from './update-token-expiration.api';
 export { changeUserPassword } from './change-password.api';
+export { updateComment } from './update-comment.api';
+export { deleteComment } from './delete-comment.api';
