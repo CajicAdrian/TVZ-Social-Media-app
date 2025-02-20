@@ -116,14 +116,13 @@ export const PostFormModal = ({
 
               {/* ✅ Insert Quote Button */}
               <Button
-                leftIcon={<FaQuoteLeft />}
                 colorScheme="gray"
                 variant="outline"
                 size="sm"
                 onClick={handleInsertQuote} // ✅ Handles inserting or fetching a quote
                 alignSelf="flex-start"
               >
-                {t('insert_quote')}
+                {t('quoteOfTheDay')}
               </Button>
 
               {mode === 'create' && (

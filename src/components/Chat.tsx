@@ -18,8 +18,10 @@ import {
   ApiUser,
   ApiMessage,
 } from 'api';
+import { useTranslation } from 'react-i18next';
 
 export const Chat = ({ userId }: { userId: number }) => {
+  const { t } = useTranslation('feed');
   const [isOpen, setIsOpen] = useState(false);
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [currentUser, setCurrentUser] = useState<ApiUser | null>(null);
@@ -115,7 +117,7 @@ export const Chat = ({ userId }: { userId: number }) => {
           fontSize="lg"
           onClick={toggleChat}
         >
-          Talk to friends
+          {t('chat')}
         </Button>
       ) : (
         <Box h="calc(100vh - 50px)" bg={bgColor} p={4}>
@@ -197,7 +199,7 @@ export const Chat = ({ userId }: { userId: number }) => {
                   colorScheme="blue"
                   onClick={handleSendMessage}
                 >
-                  Send
+                  {t('send')}
                 </Button>
               </HStack>
             </VStack>

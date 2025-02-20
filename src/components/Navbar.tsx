@@ -226,7 +226,7 @@ export const Navbar = (): JSX.Element => {
               fontWeight={400}
               variant={'link'}
             >
-              {t('sign_in')}
+              {'Log in'}
             </Button>
             <Button
               fontSize={'sm'}
@@ -235,7 +235,7 @@ export const Navbar = (): JSX.Element => {
               to="/register"
               variant={'link'}
             >
-              {t('sign_up')}
+              {'Register'}
             </Button>
           </HStack>
         )}

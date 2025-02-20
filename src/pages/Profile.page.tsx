@@ -37,6 +37,7 @@ export const Profile = (): JSX.Element => {
     profileImage?: string;
     bio?: string;
   } | null>(null);
+
   const [error, setError] = useState<string | null>(null);
   const [edit, setEdit] = useState<EditState | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();

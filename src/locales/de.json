@@ -1,41 +1,42 @@
 {
-    "global": {
-        "sign_in": "Anmelden",
-        "sign_up": "Registrieren",
-        "logout": "Abmelden",
-        "username": "Benutzername",
-        "password": "Passwort",
-        "language": "Sprache",
-        "edit": "Bearbeiten",
-        "delete": "Löschen",
-        "quote_of_day": "Zitat des Tages",
-        "n_comments": "Kommentare",
-        "action_comment": "Kommentieren"
-    },
-    "home": {
-        "head1": "Teile Inhalte mit",
-        "head2": "deinen Freunden",
-        "desc": "Teile deine Beiträge und Bilder mit anderen.",
-        "register": "Registrieren",
-        "learn_more": "Mehr erfahren"
-    },
-    "login": {
-        "head1": "Anmelden bei deinem Konto",
-        "head2": "um alle unsere coolen",
-        "features": "Funktionen zu genießen",
-        "remember_me": "An mich erinnern",
-        "forgot_password": "Passwort vergessen?"
-    },
-    "register": {
-        "head1": "Ein neues Konto registrieren",
-        "head2": "um alle unsere coolen",
-        "features": "Funktionen zu genießen"
-    },
-    "feed": {
-        "create_new_post": "Neuen Beitrag erstellen",
-        "title": "Titel",
-        "description": "Beschreibung",
-        "image": "Bild, das du hochladen möchtest",
-        "send": "Und senden!"
-    }
+  "global": {
+    "logout": "Abmelden",
+    "username": "Benutzername",
+    "language": "Sprache",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  },
+  "feed": {
+    "create_new_post": "Neuen Beitrag erstellen",
+    "title": "Titel",
+    "description": "Beschreibung",
+    "quoteOfTheDay": "Zitat des Tages",
+    "image": "Bild, das Sie hochladen möchten",
+    "send": "Und senden!",
+    "chat": "Mit Freunden chatten"
+  },
+  "settings": {
+    "settings": "Einstellungen",
+    "editProfile": "Profil bearbeiten",
+    "notifications": "Benachrichtigungen",
+    "security": "Sicherheit",
+    "roles": "Rollen",
+    "adminSettings": "Admin-Einstellungen",
+    "about": "Über mich",
+    "email": "E-Mail-Adresse",
+    "gender": "Geschlecht",
+    "female": "Weiblich",
+    "male": "Männlich",
+    "likeNotifications": "Erhalte Like-Benachrichtigungen",
+    "commentNotifications": "Erhalte Kommentar-Benachrichtigungen",
+    "refreshRate": "Benachrichtigungsfrequenz",
+    "currentPass": "Aktuelles Passwort",
+    "newPass": "Neues Passwort",
+    "confirmNewPass": "Neues Passwort bestätigen",
+    "changePass": "Passwort ändern",
+    "userRoles": "Benutzerrollen",
+    "adminUsername": "Admin-Benutzername:",
+    "uploadSize": "Maximale Upload-Größe:",
+    "tokenTime": "Token-Ablaufzeit:"
+  }
 }

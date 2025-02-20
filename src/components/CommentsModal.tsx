@@ -6,10 +6,16 @@ import {
   Textarea,
   VStack,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaPaperPlane, FaEdit, FaTrash } from 'react-icons/fa';
+import {
+  FaPaperPlane,
+  FaEdit,
+  FaTrash,
+  FaArrowCircleLeft,
+} from 'react-icons/fa';
 import {
   ApiComment,
   createComment,
@@ -37,6 +43,9 @@ export const CommentsModal = ({
   const [content, setContent] = useState('');
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState<string>('');
+  const textColor = useColorModeValue('black', 'white'); // Message section background
+  const bubbleBg = useColorModeValue('blue.100', 'blue.800'); // Chat bubbles
+  const bubbleBg2 = useColorModeValue('gray.100', 'gray.800'); // Chat bubbles
 
   // ✅ Fetch comments and update state
   useEffect(() => {
@@ -85,14 +94,15 @@ export const CommentsModal = ({
             <Box
               key={comment.id}
               w="full"
-              background="blue.100"
+              background={bubbleBg}
               p="3"
               rounded="md"
             >
-              <Text as="span" fontWeight="bold">
+              <Text as="span" fontWeight="bold" color={textColor}>
                 {comment.user.name}
               </Text>
               <Textarea
+                color={textColor}
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
               />
@@ -106,7 +116,7 @@ export const CommentsModal = ({
                 />
                 <IconButton
                   aria-label="Cancel"
-                  icon={<FaTrash />}
+                  icon={<FaArrowCircleLeft />}
                   size="xs"
                   colorScheme="gray"
                   onClick={() => setEditingCommentId(null)}
@@ -117,12 +127,12 @@ export const CommentsModal = ({
             <Box
               key={comment.id}
               w="full"
-              background="blue.50"
+              background={bubbleBg}
               p="3"
               rounded="md"
             >
               <HStack justify="space-between">
-                <Text as="span" fontWeight="bold">
+                <Text as="span" fontWeight="bold" color={textColor}>
                   {comment.user.name}
                 </Text>
                 {comment.user.id === userId && (
@@ -144,7 +154,7 @@ export const CommentsModal = ({
                   </HStack>
                 )}
               </HStack>
-              <Text>{comment.content}</Text>
+              <Text color={textColor}>{comment.content}</Text>
             </Box>
           ),
         )}
@@ -156,6 +166,7 @@ export const CommentsModal = ({
       <HStack mt="3">
         <Box flex="1 0 auto">
           <Textarea
+            bg={bubbleBg2}
             value={content}
             onChange={handleContentChange}
             placeholder={`${t('action_comment')}...`}

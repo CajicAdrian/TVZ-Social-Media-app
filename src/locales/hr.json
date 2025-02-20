@@ -1,41 +1,42 @@
 {
-    "global": {
-        "sign_in": "Prijava",
-        "sign_up": "Registracija",
-        "logout": "Odjava",
-        "username": "Korisničko ime",
-        "password": "Lozinka",
-        "language": "Jezik",
-        "edit": "Uredi",
-        "delete": "Obriši",
-        "quote_of_day": "Citat dana",
-        "n_comments": "komentara",
-        "action_comment": "Komentiraj"
-    },
-    "home": {
-        "head1": "Podijeli sadržaj sa",
-        "head2": "svojim prijateljima",
-        "desc": "Podijeli svoje objave i slike s drugima.",
-        "register": "Registriraj se",
-        "learn_more": "Saznaj više"
-    },
-    "login": {
-        "head1": "Ulogiraj se u svoj račun",
-        "head2": "i uživaj u svim našim cool",
-        "features": "značajkama",
-        "remember_me": "Zapamti me",
-        "forgot_password": "Zaboravih lozinku?"
-    },
-    "register": {
-        "head1": "Registriraj novi račun",
-        "head2": "i uživaj u svim našim cool",
-        "features": "značajkama"
-    },
-    "feed": {
-        "create_new_post": "Kreiraj novu objavu",
-        "title": "Naslov",
-        "description": "Opis",
-        "image": "Slika",
-        "send": "Objavi!"
-    }
+  "global": {
+    "logout": "Odjava",
+    "username": "Korisničko ime",
+    "language": "Jezik",
+    "edit": "Uredi",
+    "delete": "Izbriši"
+  },
+  "feed": {
+    "create_new_post": "Kreiraj novu objavu",
+    "title": "Naslov",
+    "description": "Opis",
+    "quoteOfTheDay": "Citati dana",
+    "image": "Slika koju želite prenijeti",
+    "send": "I pošalji!",
+    "chat": "Razgovaraj s prijateljima"
+  },
+  "settings": {
+    "settings": "Postavke",
+    "editProfile": "Uredi profil",
+    "notifications": "Obavijesti",
+    "security": "Sigurnost",
+    "roles": "Uloge",
+    "adminSettings": "Administratorske postavke",
+    "about": "O meni",
+    "email": "E-mail adresa",
+    "gender": "Spol",
+    "female": "Žensko",
+    "male": "Muško",
+    "likeNotifications": "Primaj obavijesti o sviđanjima",
+    "commentNotifications": "Primaj obavijesti o komentarima",
+    "refreshRate": "Učestalost obavijesti",
+    "currentPass": "Trenutna lozinka",
+    "newPass": "Nova lozinka",
+    "confirmNewPass": "Potvrdi novu lozinku",
+    "changePass": "Promijeni lozinku",
+    "userRoles": "Korisničke uloge",
+    "adminUsername": "Administratorsko korisničko ime:",
+    "uploadSize": "Maksimalna veličina prijenosa:",
+    "tokenTime": "Vrijeme isteka tokena:"
+  }
 }

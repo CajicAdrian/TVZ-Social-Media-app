@@ -1,41 +1,42 @@
 {
-    "global": {
-        "sign_in": "Sign in",
-        "sign_up": "Sign up",
-        "logout": "Logout",
-        "username": "Username",
-        "password": "Password",
-        "language": "Language",
-        "edit": "Edit",
-        "delete": "Delete",
-        "quote_of_day": "Quote of day",
-        "n_comments": "comments",
-        "action_comment": "Comment"
-    },
-    "home": {
-        "head1": "Share content with",
-        "head2": "your friends",
-        "desc": "Share your posts and pictures with others.",
-        "register": "Register",
-        "learn_more": "Learn more"
-    },
-    "login": {
-        "head1": "Sign in to your account",
-        "head2": "to enjoy all of our cool",
-        "features": "features",
-        "remember_me": "Remember me",
-        "forgot_password": "Forgot password?"
-    },
-    "register": {
-        "head1": "Register a new account",
-        "head2": "to enjoy all of our cool",
-        "features": "features"
-    },
-    "feed": {
-        "create_new_post": "Create a new Post",
-        "title": "Title",
-        "description": "Description",
-        "image": "Image you want to upload",
-        "send": "And send!"
-    }
+  "global": {
+    "logout": "Logout",
+    "username": "Username",
+    "language": "Language",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "feed": {
+    "create_new_post": "Create a new Post",
+    "title": "Title",
+    "description": "Description",
+    "quoteOfTheDay": "Quote of the day",
+    "image": "Image you want to upload",
+    "send": "And send!",
+    "chat": "Talk to friends"
+  },
+  "settings": {
+    "settings": "Settings",
+    "editProfile": "Edit Profile",
+    "notifications": "Notifications",
+    "security": "Security",
+    "roles": "Roles",
+    "adminSettings": "Admin Settings",
+    "about": "About Me",
+    "email": "Email Adress",
+    "gender": "Gender",
+    "female": "Female",
+    "male": "Male",
+    "likeNotifications": "Receive Like Notifications",
+    "commentNotifications": "Receive Comment Notifications",
+    "refreshRate": "Notification Refresh Rate",
+    "currentPass": "Current Password",
+    "newPass": "New Password",
+    "confirmNewPass": "Confirm New Password",
+    "changePass": "Change Password",
+    "userRoles": "User Roles",
+    "adminUsername": "Admin Username:",
+    "uploadSize": "Max Upload Size:",
+    "tokenTime": "Token Expiration Time:"
+  }
 }

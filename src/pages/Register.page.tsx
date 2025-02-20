@@ -25,7 +25,6 @@ interface FormData {
 }
 
 export const Register = (): JSX.Element => {
-  const { t } = useTranslation('register');
   const { handleSubmit, register } = useForm<FormData>({});
   const navigate = useNavigate();
   const { setAccessToken, setUser } = useContext(AuthContext);
@@ -101,7 +100,7 @@ export const Register = (): JSX.Element => {
                 mb={6}
                 fontFamily="'Karma', serif"
               >
-                {t('create_account', 'Create your account')}
+                {'Create your account'}
               </Heading>
 
               <FormControl>
@@ -109,7 +108,7 @@ export const Register = (): JSX.Element => {
                   fontSize="md" // Adjust this as needed
                   fontFamily="'Assistant', sans-serif"
                 >
-                  {t('username', 'USERNAME')}:
+                  {'Username'}:
                 </FormLabel>
                 <Input
                   type="username"
@@ -117,7 +116,7 @@ export const Register = (): JSX.Element => {
                   variant="unstyled"
                   borderBottom="1px solid black"
                   borderRadius={'0'}
-                  placeholder={t('username_placeholder', 'Enter your username')}
+                  placeholder={'Enter your username'}
                   fontFamily="'Assistant', sans-serif"
                   fontSize="md" // Adjust this as needed
                 />
@@ -128,7 +127,7 @@ export const Register = (): JSX.Element => {
                   fontSize="md"
                   fontFamily="'Assistant', sans-serif" // Apply Assistant font
                 >
-                  {t('password', 'PASSWORD')}:
+                  {'Password'}:
                 </FormLabel>
                 <Input
                   type="password"
@@ -136,7 +135,7 @@ export const Register = (): JSX.Element => {
                   variant="unstyled"
                   borderBottom="1px solid black"
                   borderRadius={'0'}
-                  placeholder={t('password_placeholder', 'Enter your password')}
+                  placeholder={'Enter your password'}
                   fontFamily="'Assistant', sans-serif" // Apply Assistant font to input
                   fontSize="md" // Adjust this as needed
                 />
@@ -148,13 +147,13 @@ export const Register = (): JSX.Element => {
                 width="150px"
                 borderRadius="12px"
               >
-                {t('signup_button', 'Sign Up')}
+                {'Sign Up'}
               </Button>
               {Array.isArray(errors) &&
                 errors.length > 0 && ( // Ensure errors is an array
                   <Text color="red.500">
                     {errors.map((error, index) => (
-                      <div key={index}>{t(error)}</div>
+                      <div key={index}>{error}</div>
                     ))}
                   </Text>
                 )}
@@ -169,7 +168,7 @@ export const Register = (): JSX.Element => {
                 <RouterLink to="/login" style={{ color: '#97C0E4' }}>
                   {' '}
                   {/* Link to /register */}
-                  {t('already_have_account', 'Already have an account?')}
+                  {'Already have an account?'}
                 </RouterLink>
               </Text>
             </VStack>

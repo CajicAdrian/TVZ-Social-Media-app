@@ -27,7 +27,7 @@ interface FormData {
 }
 
 export const Login = (): JSX.Element => {
-  const { t, i18n } = useTranslation('login');
+  const { i18n } = useTranslation('login');
   const { colorMode, toggleColorMode } = useColorMode();
   const { handleSubmit, register } = useForm<FormData>({});
   const { setAccessToken, setUser } = useContext(AuthContext);
@@ -93,7 +93,7 @@ export const Login = (): JSX.Element => {
       }, 300);
     } catch (error: any) {
       console.error('❌ Login failed:', error);
-      setErrors([t('login_failed', 'Login failed. Please try again.')]);
+      setErrors(['Login failed. Please try again.']);
     }
   };
 
@@ -138,12 +138,12 @@ export const Login = (): JSX.Element => {
                 mb={6}
                 fontFamily="'Karma', serif"
               >
-                {t('welcome_back', 'Welcome back')}
+                {'Welcome back'}
               </Heading>
 
               <FormControl>
                 <FormLabel fontSize="md" fontFamily="'Assistant', sans-serif">
-                  {t('username', 'USERNAME')}
+                  {'Username'}
                 </FormLabel>
                 <Input
                   type="text"
@@ -151,7 +151,7 @@ export const Login = (): JSX.Element => {
                   variant="unstyled"
                   borderBottom="1px solid black"
                   borderRadius="0"
-                  placeholder={t('username_placeholder', 'Enter your username')}
+                  placeholder={'Enter your username'}
                   fontFamily="'Assistant', sans-serif"
                   fontSize="md"
                 />
@@ -159,7 +159,7 @@ export const Login = (): JSX.Element => {
 
               <FormControl>
                 <FormLabel fontSize="md" fontFamily="'Assistant', sans-serif">
-                  {t('password', 'PASSWORD')}
+                  {'Password'}
                 </FormLabel>
                 <Input
                   type="password"
@@ -167,7 +167,7 @@ export const Login = (): JSX.Element => {
                   variant="unstyled"
                   borderBottom="1px solid black"
                   borderRadius="0"
-                  placeholder={t('password_placeholder', 'Enter your password')}
+                  placeholder={'Enter your password'}
                   fontFamily="'Assistant', sans-serif"
                   fontSize="md"
                 />
@@ -180,7 +180,7 @@ export const Login = (): JSX.Element => {
                 borderRadius="12px"
                 type="submit"
               >
-                {t('signin_button', 'Log In')}
+                {'Log In'}
               </Button>
               {errors.length > 0 && (
                 <Text color="red.500" fontFamily="'Assistant', sans-serif">
@@ -200,7 +200,7 @@ export const Login = (): JSX.Element => {
                 color="#97C0E4"
               >
                 <Link as={RouterLink} to="/register" color="#97C0E4">
-                  {t('no_account', "Don't have an account?")}
+                  {"Don't have an account?"}
                 </Link>
               </Text>
             </VStack>

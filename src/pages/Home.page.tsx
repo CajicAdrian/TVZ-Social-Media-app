@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import img from '../images/Home.jpeg';
 
 export const Home = (): JSX.Element => {
-  const { t } = useTranslation('home');
   return (
     <>
       <Container
@@ -34,53 +33,15 @@ export const Home = (): JSX.Element => {
             fontSize={{ base: '2xl', sm: '4xl', md: '7xl' }}
             lineHeight={'110%'}
           >
-            {t('Welcome to TBD')} <br />
+            {'Welcome to TBD'} <br />
           </Heading>
           <Text
             color={'black.100'}
             fontFamily={'Ariel'}
             fontSize={{ base: '1xl', sm: '2xl', md: '2xl' }}
           >
-            {t('Make memories stand out')}
+            {'Make memories stand out'}
           </Text>
-          <Stack
-            direction={'row'}
-            spacing={3}
-            align={'center'}
-            alignSelf={'left'}
-            position={'relative'}
-          >
-            <Button
-              as={RouterLink}
-              to="/register"
-              colorScheme={'gray'}
-              bg={'white'}
-              opacity={'100%'}
-              rounded={'full'}
-              border={'2px solid white'}
-              px={6}
-              _hover={{
-                bg: 'gray.500',
-              }}
-            >
-              {t('Sign up')}
-            </Button>
-            <Button
-              as={RouterLink}
-              to="/register"
-              colorScheme={'gray'}
-              bg={'white'}
-              rounded={'full'}
-              opacity={'70%'}
-              border={'2px solid white'}
-              px={6}
-              _hover={{
-                bg: 'gray.500',
-              }}
-            >
-              {t('Log in')}
-            </Button>
-          </Stack>
         </Stack>
       </Container>
     </>

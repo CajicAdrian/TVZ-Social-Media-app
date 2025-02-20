@@ -10,7 +10,6 @@ import {
   Text,
   RadioGroup,
   Radio,
-  Textarea,
   Select,
   Avatar,
   IconButton,
@@ -51,7 +50,7 @@ interface User {
 export const Settings = (): JSX.Element => {
   const { t } = useTranslation('settings');
   const [selectedCategory, setSelectedCategory] = useState<
-    'edit-profile' | 'notification' | 'security' | 'help' | 'roles' | 'admin'
+    'edit-profile' | 'notification' | 'security' | 'roles' | 'admin'
   >('edit-profile');
   const [loadingSettings] = useState(true);
   const { appSettings, setAppSettings } = useAppSettings();
@@ -352,28 +351,25 @@ export const Settings = (): JSX.Element => {
       leftContent={
         <Box>
           <Heading size="md" mb={5}>
-            {t('Settings')}
+            {t('settings')}
           </Heading>
           <Stack spacing={3} align="flex-start">
             <Button onClick={() => setSelectedCategory('edit-profile')}>
-              {t('Edit Profile')}
+              {t('editProfile')}
             </Button>
             <Button onClick={() => setSelectedCategory('notification')}>
-              {t('Notification')}
-            </Button>
-            <Button onClick={() => setSelectedCategory('help')}>
-              {t('Help')}
+              {t('notifications')}
             </Button>
             <Button onClick={() => setSelectedCategory('security')}>
-              {t('Security')}
+              {t('security')}
             </Button>
             {userData.role === 'ADMIN' && (
               <>
                 <Button onClick={() => setSelectedCategory('roles')}>
-                  {t('Roles')}
+                  {t('roles')}
                 </Button>
                 <Button onClick={() => setSelectedCategory('admin')}>
-                  {t('Admin Settings')}
+                  {t('adminSettings')}
                 </Button>
               </>
             )}
@@ -427,9 +423,9 @@ export const Settings = (): JSX.Element => {
               </Flex>
               <Stack spacing={6}>
                 {[
-                  { key: 'username', label: t('Username') },
-                  { key: 'bio', label: t('About Me') },
-                  { key: 'email', label: t('Email Address') },
+                  { key: 'username', label: t('username') },
+                  { key: 'bio', label: t('about') },
+                  { key: 'email', label: t('email') },
                 ].map(({ key, label }) => (
                   <Flex align="center" key={key}>
                     <Box flex="1">
@@ -471,19 +467,19 @@ export const Settings = (): JSX.Element => {
                 ))}
 
                 <Box>
-                  <Text fontWeight="bold">{t('Gender')}:</Text>
+                  <Text fontWeight="bold">{t('gender')}:</Text>
                   <RadioGroup
                     value={userData.gender}
                     onChange={(value) => handleFieldUpdate('gender', value)}
                   >
                     <Stack direction="row">
-                      <Radio value="female">{t('Female')}</Radio>
-                      <Radio value="male">{t('Male')}</Radio>
+                      <Radio value="female">{t('female')}</Radio>
+                      <Radio value="male">{t('male')}</Radio>
                     </Stack>
                   </RadioGroup>
                 </Box>
                 <Box>
-                  <Text fontWeight="bold">{t('Language')}:</Text>
+                  <Text fontWeight="bold">{t('language')}:</Text>
                   {userData.id ? (
                     <LanguageMenu userId={userData.id} />
                   ) : (
@@ -495,13 +491,9 @@ export const Settings = (): JSX.Element => {
           )}
           {selectedCategory === 'notification' && (
             <Box>
-              <Heading size="md" mb={4}>
-                {t('Notification Settings')}
-              </Heading>
-
               <Stack spacing={5}>
                 <Flex align="center" justify="space-between">
-                  <Text>{t('Receive Like Notifications')}</Text>
+                  <Text>{t('likeNotifications')}</Text>
                   <input
                     type="checkbox"
                     checked={appSettings.likeNotifications}
@@ -511,7 +503,7 @@ export const Settings = (): JSX.Element => {
                 </Flex>
 
                 <Flex align="center" justify="space-between">
-                  <Text>{t('Receive Comment Notifications')}</Text>
+                  <Text>{t('commentNotifications')}</Text>
                   <input
                     type="checkbox"
                     checked={appSettings.commentNotifications}
@@ -521,7 +513,7 @@ export const Settings = (): JSX.Element => {
                 </Flex>
 
                 <Flex align="center" justify="space-between">
-                  <Text>{t('Notification Refresh Rate')}</Text>
+                  <Text>{t('refreshRate')}</Text>
                   <Select
                     w={'150px'}
                     value={appSettings.notificationRefreshRate}
@@ -537,13 +529,9 @@ export const Settings = (): JSX.Element => {
           )}
           {selectedCategory === 'security' && (
             <Box>
-              <Heading size="md" mb={4}>
-                {t('Security')}
-              </Heading>
-
               {/* Change Password Form */}
               <Box>
-                <Text fontWeight="bold">{t('Current Password')}:</Text>
+                <Text fontWeight="bold">{t('currentPass')}:</Text>
                 <Input
                   type="password"
                   value={currentPassword}
@@ -552,7 +540,7 @@ export const Settings = (): JSX.Element => {
                 />
 
                 <Text fontWeight="bold" mt={3}>
-                  {t('New Password')}:
+                  {t('newPass')}:
                 </Text>
                 <Input
                   type="password"
@@ -562,7 +550,7 @@ export const Settings = (): JSX.Element => {
                 />
 
                 <Text fontWeight="bold" mt={3}>
-                  {t('Confirm New Password')}:
+                  {t('confirmNewPass')}:
                 </Text>
                 <Input
                   type="password"
@@ -581,26 +569,14 @@ export const Settings = (): JSX.Element => {
                   }
                   onClick={handleChangePassword}
                 >
-                  {t('Change Password')}
+                  {t('changePass')}
                 </Button>
               </Box>
             </Box>
           )}
-          {selectedCategory === 'help' && (
-            <Box>
-              <Heading size="md">
-                {t('Get help from our dedicated team:')}
-              </Heading>
-              <Flex mt={4} align="center">
-                <Textarea placeholder="Describe your issue here..." flex="1" />
-                <Button ml={2}>{t('Send Request')}</Button>
-              </Flex>
-            </Box>
-          )}
-
           {selectedCategory === 'roles' && (
             <Box>
-              <Heading size="md">{t('User Roles')}</Heading>
+              <Heading size="md">{t('userRoles')}</Heading>
               {users.map((user) => (
                 <Flex
                   key={user.id}
@@ -663,13 +639,13 @@ export const Settings = (): JSX.Element => {
           {selectedCategory === 'admin' && (
             <Box>
               <Heading size="md" mb={4}>
-                Admin Settings
+                {t('adminSettings')}
               </Heading>
 
               {/* ✅ Admin Username */}
               <Flex align="center" mb={4}>
                 <Text fontWeight="bold" flex="1">
-                  Admin Username:
+                  {t('adminUsername')}
                 </Text>
                 <Input
                   value={appSettings.adminUsername || ''}
@@ -690,7 +666,7 @@ export const Settings = (): JSX.Element => {
               {/* ✅ Max Upload Size */}
               <Flex align="center" mb={4}>
                 <Text fontWeight="bold" flex="1">
-                  Max Upload Size:
+                  {t('uploadSize')}
                 </Text>
                 <Select
                   value={appSettings.maxUploadSize || '10MB'}
@@ -706,7 +682,7 @@ export const Settings = (): JSX.Element => {
               {/* ✅ Token Expiration Time */}
               <Flex align="center">
                 <Text fontWeight="bold" flex="1">
-                  Token Expiration Time:
+                  {t('tokenTime')}
                 </Text>
                 <Select
                   value={appSettings.tokenExpirationTime || '3600s'}
