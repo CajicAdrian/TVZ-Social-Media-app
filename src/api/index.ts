@@ -48,3 +48,4 @@ export { updateTokenExpirationTime } from './update-token-expiration.api';
 export { changeUserPassword } from './change-password.api';
 export { updateComment } from './update-comment.api';
 export { deleteComment } from './delete-comment.api';
+export { getQuoteOfTheDay } from './get-quote-of-the-day.api';
