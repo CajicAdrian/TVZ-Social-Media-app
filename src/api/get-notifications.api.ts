@@ -2,7 +2,7 @@ import { api } from './api';
 
 export interface ApiNotification {
   id: number;
-  type: 'like' | 'comment';
+  type: 'like' | 'comment' | 'like_comment';
   fromUser: { id: number; username: string };
   post?: { id: number; title: string };
   read: boolean;

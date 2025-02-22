@@ -1,9 +1,12 @@
-import { api } from "./api"
+import { api } from './api';
 
-export const toggleLike = async (postId: number, like: boolean): Promise<void> => {
-    if (like) {
-        await api.post(`/posts/${postId}/likes`);
-    } else {
-        await api.delete(`/posts/${postId}/likes`);
-    }
-}
+export const toggleLike = async (
+  postId: number,
+  like: boolean,
+): Promise<void> => {
+  if (like) {
+    await api.post(`/likes/post/${postId}`); // ✅ Correct path
+  } else {
+    await api.delete(`/likes/posts/${postId}`); // ✅ Correct path
+  }
+};

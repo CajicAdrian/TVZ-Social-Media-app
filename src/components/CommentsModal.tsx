@@ -15,6 +15,7 @@ import {
   FaEdit,
   FaTrash,
   FaArrowCircleLeft,
+  FaHeart,
 } from 'react-icons/fa';
 import {
   ApiComment,
@@ -22,6 +23,7 @@ import {
   deleteComment,
   getComments,
   updateComment,
+  toggleCommentLike,
 } from 'api';
 
 interface Props {
@@ -151,6 +153,26 @@ export const CommentsModal = ({
                       colorScheme="red"
                       onClick={() => handleDelete(comment.id)}
                     />
+                    <Box position="relative">
+                      <IconButton
+                        aria-label="Like"
+                        icon={<FaHeart />}
+                        size="xs"
+                        colorScheme="transparent"
+                        color={comment.isLikedByUser ? 'red.500' : 'black'}
+                        _hover={{ color: 'red.500' }}
+                        onClick={async () => {
+                          await toggleCommentLike(
+                            comment.id,
+                            !comment.isLikedByUser,
+                          ); // ✅ Toggle like state
+                          onChange(); // Refresh comments
+                        }}
+                      />
+                      <Text fontSize="sm" ml={2}>
+                        {comment.likeCount}
+                      </Text>
+                    </Box>
                   </HStack>
                 )}
               </HStack>

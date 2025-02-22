@@ -8,6 +8,8 @@ export interface ApiComment {
     id: number;
     name: string;
   };
+  likeCount: number; // ✅ Total number of likes on the comment
+  isLikedByUser: boolean; // ✅ Whether the logged-in user liked this comment
 }
 
 export const getComments = async (postId: number): Promise<ApiComment[]> => {
