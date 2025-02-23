@@ -16,11 +16,12 @@ import {
 } from 'api';
 import { FaBell } from 'react-icons/fa';
 import { AuthContext } from '../components/AuthContext'; // ✅ Get user ID from AuthContext
+import { useTranslation } from 'react-i18next';
 
 // ✅ Notification type (must match API response)
 interface ApiNotification {
   id: number;
-  type: 'like' | 'comment';
+  type: 'like' | 'comment' | 'like_comment';
   read: boolean;
   createdAt: string;
   fromUser: {
@@ -28,14 +29,12 @@ interface ApiNotification {
     username: string;
     profileImage?: string;
   };
-  post?: {
-    id: number;
-    title: string;
-  };
+  postTitle?: string; // ✅ Replaces the `post` object
 }
 
 export const Notifications = (): ReactElement => {
   const { user } = useContext(AuthContext); // ✅ Get logged-in user
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<ApiNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -190,12 +189,12 @@ export const Notifications = (): ReactElement => {
             <Spinner size="md" alignSelf="center" mt={4} />
           ) : notifications.length === 0 ? (
             <Text textAlign="center" p={4}>
-              No new notifications
+              {t('No new notifications')}
             </Text>
           ) : (
             <VStack divider={<Divider />} align="stretch" spacing={0}>
               {notifications.map((notification) => {
-                const { fromUser, post, createdAt, id, type, read } =
+                const { fromUser, postTitle, createdAt, id, type, read } =
                   notification;
                 const profileImage = fromUser.profileImage
                   ? `http://localhost:3000/${fromUser.profileImage.replace(
@@ -225,14 +224,17 @@ export const Notifications = (): ReactElement => {
                       <Text fontSize="sm">
                         {type === 'like'
                           ? `liked your post: "${
-                              post?.title || 'Unknown Post'
+                              notification.postTitle || 'Unknown Post'
                             }"`
                           : type === 'comment'
                           ? `commented on your post: "${
-                              post?.title || 'Unknown Post'
+                              notification.postTitle || 'Unknown Post'
                             }"`
-                          : `followed you`}
+                          : `liked your comment on "${
+                              notification.postTitle || 'Unknown Post'
+                            }"`}
                       </Text>
+
                       <Text fontSize="xs" color="gray.500">
                         {new Date(createdAt).toLocaleString()}
                       </Text>

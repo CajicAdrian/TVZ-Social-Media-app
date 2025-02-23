@@ -10,7 +10,7 @@ import {
   ModalOverlay,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import CommentIcon from '../images/Comment.png'; // Import the comment bubble image
 import { CommentsModal } from './CommentsModal'; // ✅ Import the new component
 
@@ -29,6 +29,10 @@ export const Comments = ({
 }: Props): ReactElement => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [currentCommentCount, setCurrentCommentCount] = useState(commentCount); // ✅ Track count in state
+
+  useEffect(() => {
+    setCurrentCommentCount(commentCount);
+  }, [commentCount]);
 
   return (
     <>
