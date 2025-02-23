@@ -15,7 +15,7 @@ export { uploadImage } from './image.api';
 export { createComment } from './create-comment.api';
 export { toggleLike } from './toggle-like.api';
 export type { ApiNotification } from './get-notifications.api';
-export { getNotifications } from './get-notifications.api';
+export { getNotificationsForUser } from './get-notifications.api';
 export { markNotificationAsRead } from './mark-notification-as-read.api';
 export { getMessages } from './get-messages.api';
 export { sendMessage } from './send-message.api';
