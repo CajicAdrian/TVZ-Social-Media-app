@@ -8,6 +8,7 @@ import {
   Avatar,
   Spinner,
   Divider,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { FaBell } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +18,8 @@ export const Notifications = (): ReactElement => {
   const { t } = useTranslation();
   const { notifications, loading } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
+  const textColor = useColorModeValue('black', 'white');
+  const bubbleBg = useColorModeValue('blue.100', 'blue.800');
 
   return (
     <Box position="relative">
@@ -64,7 +67,8 @@ export const Notifications = (): ReactElement => {
                   <HStack
                     key={id}
                     p={3}
-                    bg={'white'}
+                    color={textColor}
+                    bg={bubbleBg}
                     _hover={{ bg: 'gray.100' }}
                     cursor="default"
                   >
