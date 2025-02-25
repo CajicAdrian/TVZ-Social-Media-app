@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Flex,
@@ -11,51 +11,12 @@ import {
   Avatar,
 } from '@chakra-ui/react';
 import { MdSettings, MdDarkMode, MdLightMode } from 'react-icons/md';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { getCurrentUser, updateUserTheme } from 'api';
 import { useTranslation } from 'react-i18next';
 import { Notifications } from './Notifications';
 import { AuthContext } from './AuthContext';
-
-const LogoutButton = (): ReactElement => {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
-  const { colorMode, toggleColorMode } = useColorMode();
-
-  const logout = () => {
-    console.log('🚪 Logging out...');
-
-    // ✅ Completely remove user session data
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('userSettings');
-    localStorage.removeItem('language');
-    localStorage.removeItem('theme'); // ✅ Remove persistent theme
-    localStorage.removeItem('sessionTheme'); // ✅ Remove temporary theme override
-    localStorage.removeItem('likeNotifications');
-    localStorage.removeItem('commentNotifications');
-    localStorage.removeItem('notificationRefreshRate');
-
-    // ✅ Reset Language to English immediately
-    i18n.changeLanguage('en');
-
-    // ✅ Reset Dark Mode if Enabled
-    if (colorMode === 'dark') toggleColorMode();
-
-    window.dispatchEvent(new Event('refresh-rate-change')); // ✅ Ensures all settings update
-
-    navigate('/');
-    setTimeout(() => {
-      window.location.reload(); // ✅ Ensures complete reset
-    }, 100);
-  };
-
-  return (
-    <Button onClick={logout} fontSize={'sm'} fontWeight={600} colorScheme="red">
-      {t('logout')}
-    </Button>
-  );
-};
+import { LogoutButton } from './Logout';
 
 export const Navbar = (): JSX.Element => {
   const { toggleColorMode, colorMode, setColorMode } = useColorMode();
