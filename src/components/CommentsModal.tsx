@@ -136,44 +136,49 @@ export const CommentsModal = ({
                 <Text as="span" fontWeight="bold" color={textColor}>
                   {comment.user.name}
                 </Text>
-                {comment.user.id === userId && (
-                  <HStack>
-                    <IconButton
-                      aria-label="Edit"
-                      icon={<FaEdit />}
-                      size="xs"
-                      colorScheme="blue"
-                      onClick={() => startEditing(comment.id, comment.content)}
-                    />
-                    <IconButton
-                      aria-label="Delete"
-                      icon={<FaTrash />}
-                      size="xs"
-                      colorScheme="red"
-                      onClick={() => handleDelete(comment.id)}
-                    />
-                    <Box position="relative">
+
+                <HStack>
+                  {comment.user.id === userId && (
+                    <>
                       <IconButton
-                        aria-label="Like"
-                        icon={<FaHeart />}
+                        aria-label="Edit"
+                        icon={<FaEdit />}
                         size="xs"
-                        colorScheme="transparent"
-                        color={comment.isLikedByUser ? 'red.500' : 'black'}
-                        _hover={{ color: 'red.500' }}
-                        onClick={async () => {
-                          await toggleCommentLike(
-                            comment.id,
-                            !comment.isLikedByUser,
-                          );
-                          onChange();
-                        }}
+                        colorScheme="blue"
+                        onClick={() =>
+                          startEditing(comment.id, comment.content)
+                        }
                       />
-                      <Text fontSize="sm" ml={2}>
-                        {comment.likeCount}
-                      </Text>
-                    </Box>
-                  </HStack>
-                )}
+                      <IconButton
+                        aria-label="Delete"
+                        icon={<FaTrash />}
+                        size="xs"
+                        colorScheme="red"
+                        onClick={() => handleDelete(comment.id)}
+                      />
+                    </>
+                  )}
+                  <Box position="relative">
+                    <IconButton
+                      aria-label="Like"
+                      icon={<FaHeart />}
+                      size="xs"
+                      colorScheme="transparent"
+                      color={comment.isLikedByUser ? 'red.500' : 'black'}
+                      _hover={{ color: 'red.500' }}
+                      onClick={async () => {
+                        await toggleCommentLike(
+                          comment.id,
+                          !comment.isLikedByUser,
+                        );
+                        onChange();
+                      }}
+                    />
+                    <Text fontSize="sm" ml={2}>
+                      {comment.likeCount}
+                    </Text>
+                  </Box>
+                </HStack>
               </HStack>
               <Text color={textColor}>{comment.content}</Text>
             </Box>
