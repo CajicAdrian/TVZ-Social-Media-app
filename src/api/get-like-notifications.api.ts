@@ -1,6 +1,5 @@
 import { api } from './api';
 
-// ✅ Get Like Notification Setting
 export const getLikeNotifications = async (
   userId: number,
 ): Promise<boolean> => {

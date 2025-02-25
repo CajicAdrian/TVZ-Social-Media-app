@@ -5,10 +5,13 @@ interface UpdatePostInterface {
   description: string;
 }
 
-export const updatePost = async (postId: number, changes: Partial<UpdatePostInterface>): Promise<void> => {
+export const updatePost = async (
+  postId: number,
+  changes: Partial<UpdatePostInterface>,
+): Promise<void> => {
   const dataForm = new URLSearchParams();
   if (!changes.title && !changes.description) {
-      return; // Nothing changes
+    return;
   }
 
   if (changes.title) {

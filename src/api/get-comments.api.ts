@@ -3,13 +3,13 @@ import { api } from './api';
 export interface ApiComment {
   id: number;
   content: string;
-  createdAt: string; // ✅ Ensure timestamp is included
+  createdAt: string;
   user: {
     id: number;
     name: string;
   };
-  likeCount: number; // ✅ Total number of likes on the comment
-  isLikedByUser: boolean; // ✅ Whether the logged-in user liked this comment
+  likeCount: number;
+  isLikedByUser: boolean;
 }
 
 export const getComments = async (postId: number): Promise<ApiComment[]> => {

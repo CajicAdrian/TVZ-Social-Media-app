@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect, useContext } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   Box,
   Button,
@@ -68,7 +68,6 @@ export const Notifications = (): ReactElement => {
                     _hover={{ bg: 'gray.100' }}
                     cursor="default"
                   >
-                    {/* ✅ Avatar with fallback */}
                     <Avatar
                       size="sm"
                       name={fromUser.username}

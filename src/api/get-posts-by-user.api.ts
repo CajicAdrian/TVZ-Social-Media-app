@@ -19,12 +19,6 @@ interface Image {
 }
 
 export const getPostsByUser = async (userId: number): Promise<ApiPost[]> => {
-  try {
-    const { data } = await api.get(`/posts/user/${userId}`);
-    console.log('Fetched Posts by User:', data); // Log the response
-    return data;
-  } catch (error) {
-    console.error('Error in getPostsByUser:', error);
-    throw error;
-  }
+  const { data } = await api.get(`/posts/user/${userId}`);
+  return data;
 };

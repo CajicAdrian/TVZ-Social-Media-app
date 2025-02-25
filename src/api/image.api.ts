@@ -11,6 +11,5 @@ export const uploadImage = async (image: FileList): Promise<Image> => {
   dataForm.append('image', image[0]);
 
   const { data } = await api.post('/images/post-images', dataForm);
-  console.log(data);
   return data;
 };

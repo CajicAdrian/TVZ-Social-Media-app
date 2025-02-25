@@ -11,13 +11,11 @@ import { useAppSettings } from '../hooks/useAppSettings';
 import { useTranslation } from 'react-i18next';
 import { useColorMode } from '@chakra-ui/react';
 
-// Define User interface
 interface User {
   id: number;
   username: string;
 }
 
-// Define Authentication Context Interface
 interface IAuthContext {
   accessToken: string;
   setAccessToken: (token: string) => void;
@@ -45,7 +43,6 @@ export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
     JSON.parse(localStorage.getItem('user') || 'null'),
   );
 
-  // ✅ Integrate App Settings
   const { appSettings } = useAppSettings(user?.id);
   const { i18n } = useTranslation();
   const { colorMode, setColorMode } = useColorMode();
@@ -63,7 +60,6 @@ export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(fetchedUser));
           }
         } catch (error) {
-          console.error('❌ Failed to fetch user:', error);
           setAccessToken('');
           setUser(null);
         } finally {
@@ -79,18 +75,11 @@ export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      console.log('⚙️ Applying user settings on login:', appSettings);
-
-      // ✅ Apply Language (but don't reset it on dark mode toggle)
       if (appSettings.language && appSettings.language !== i18n.language) {
         i18n.changeLanguage(appSettings.language);
       }
 
-      // ✅ Apply Dark Mode from WinReg (Only on login)
       if (appSettings.darkMode !== colorMode) {
-        console.log(
-          `🎨 Applying dark mode from WinReg: ${appSettings.darkMode}`,
-        );
         setColorMode(appSettings.darkMode);
       }
     }

@@ -27,7 +27,6 @@ import {
   deleteUser,
   updateCommentNotifications,
   updateLikeNotifications,
-  updateNotificationRefreshRate,
   updateAdminUsername,
   updateMaxUploadSize,
   updateTokenExpirationTime,
@@ -55,12 +54,10 @@ export const Settings = (): JSX.Element => {
   const [loadingSettings] = useState(true);
   const { appSettings, setAppSettings } = useAppSettings();
 
-  // ✅ Load settings directly from localStorage (so UI doesn't show defaults)
   const storedSettings = JSON.parse(
     localStorage.getItem('userSettings') || '{}',
   );
 
-  // ✅ Fallback to appSettings if localStorage isn't available
   const settings = { ...storedSettings, ...appSettings };
   const navigate = useNavigate();
   const [loading] = useState(false);
@@ -82,24 +79,15 @@ export const Settings = (): JSX.Element => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const data = await getCurrentUser();
-        console.log('✅ Fetched User Data:', data); // Debugging
-        if (data) {
-          setUserData(data);
-        }
-      } catch (error) {
-        console.error('❌ Failed to fetch user data:', error);
+      const data = await getCurrentUser();
+      if (data) {
+        setUserData(data);
       }
     };
 
     const loadUsers = async () => {
-      try {
-        const fetchedUsers = await getAllUsers();
-        setUsers(fetchedUsers);
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
-      }
+      const fetchedUsers = await getAllUsers();
+      setUsers(fetchedUsers);
     };
 
     fetchUserData();
@@ -118,19 +106,14 @@ export const Settings = (): JSX.Element => {
 
   useEffect(() => {
     if (loadingSettings) {
-      console.log('⏳ Settings still loading, preventing navigation');
       return;
     }
 
     if (!userData?.id && localStorage.getItem('user')) {
-      console.log(
-        '⚠️ User data missing, but found user in localStorage. Waiting...',
-      );
       return;
     }
 
     if (!userData?.id) {
-      console.warn('⚠️ User data missing, redirecting to login');
       navigate('/login');
     }
   }, [loadingSettings, userData?.id]);
@@ -139,7 +122,6 @@ export const Settings = (): JSX.Element => {
     try {
       if (!value.trim()) return; // Prevent empty updates
 
-      console.log(`🚀 Updating ${field} with value:`, value);
       await updateUserSettings({ ...userData, [field]: value });
 
       setUserData((prev) => ({ ...prev, [field]: value }));
@@ -154,27 +136,18 @@ export const Settings = (): JSX.Element => {
     if (!event.target.files || event.target.files.length === 0) return;
     const file = event.target.files[0];
 
-    console.log('🚀 Uploading image for user ID:', userData.id);
-
     if (!userData.id) {
-      console.error('❌ Error: User ID is missing!');
       return;
     }
 
     try {
       const uploadedImage = await uploadProfileImage(userData.id, file);
-      console.log('✅ Image Upload Response:', uploadedImage);
 
       if (!uploadedImage || !uploadedImage.filePath) {
-        console.error(
-          '❌ Image upload response is missing filePath:',
-          uploadedImage,
-        );
         return;
       }
 
       const newProfileImage = uploadedImage.filePath.replace('static/', '');
-      console.log('🔄 Updating Profile Image:', newProfileImage);
 
       // ✅ Update the UI instantly
       setUserData((prev) => ({
@@ -186,7 +159,6 @@ export const Settings = (): JSX.Element => {
       setTimeout(async () => {
         try {
           const refreshedUserData = await getCurrentUser();
-          console.log('🔄 Refetched User Data:', refreshedUserData);
 
           if (refreshedUserData.profileImage) {
             setUserData((prev) => ({
@@ -210,123 +182,66 @@ export const Settings = (): JSX.Element => {
     userId: number,
     newRole: 'ADMIN' | 'USER',
   ) => {
-    try {
-      console.log(`🔄 Changing role of user ${userId} to ${newRole}...`);
+    await updateUserRole(userId, newRole);
 
-      // ✅ Immediately update the backend
-      await updateUserRole(userId, newRole);
-
-      // ✅ Update the UI instantly
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === userId ? { ...user, role: newRole } : user,
-        ),
-      );
-
-      console.log(`✅ Role updated successfully!`);
-    } catch (error) {
-      console.error('❌ Error updating role:', error);
-    }
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId ? { ...user, role: newRole } : user,
+      ),
+    );
   };
 
   const handleDeleteUser = async (userId: number) => {
     if (window.confirm(t('Are you sure you want to delete this user?'))) {
-      try {
-        await deleteUser(userId);
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-      } catch (error) {
-        console.error('Error deleting user:', error);
-      }
+      await deleteUser(userId);
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
     }
-  };
-  const handleRefreshRateChange = async (rate: string) => {
-    console.log(`🔄 Updating refresh rate to: ${rate}`);
-
-    // ✅ Set state immediately
-    setAppSettings((prev: typeof settings) => ({
-      ...prev, // Keep existing settings
-      notificationRefreshRate: rate, // Only update this field
-    }));
-
-    // ✅ Save to Windows Registry
-    await updateNotificationRefreshRate(userData.id, rate);
-
-    // ✅ Persist to localStorage
-    localStorage.setItem('notificationRefreshRate', rate);
-
-    // ✅ Dispatch global event to update notifications component instantly
-    window.dispatchEvent(new Event('refresh-rate-change'));
   };
 
   const handleToggleLikeNotifications = async () => {
-    try {
-      const newState = !appSettings.likeNotifications;
-      setAppSettings((prev: typeof settings) => ({
-        ...prev,
-        likeNotifications: newState, // ✅ Ensure the whole object is updated
-      }));
-      localStorage.setItem('likeNotifications', String(newState)); // ✅ Instant UI update
+    const newState = !appSettings.likeNotifications;
+    setAppSettings((prev: typeof settings) => ({
+      ...prev,
+      likeNotifications: newState,
+    }));
+    localStorage.setItem('likeNotifications', String(newState));
 
-      await updateLikeNotifications(userData.id, newState);
-      console.log('✅ Like Notifications updated in WinReg:', newState);
-    } catch (error) {
-      console.error('❌ Failed to update Like Notifications:', error);
-    }
+    await updateLikeNotifications(userData.id, newState);
   };
 
-  // ✅ Toggle Comment Notifications (updates WinReg & cache)
   const handleToggleCommentNotifications = async () => {
-    try {
-      const newState = !appSettings.commentNotifications;
-      setAppSettings((prev: typeof settings) => ({
-        ...prev,
-        commentNotifications: newState, // ✅ Ensure the whole object is updated
-      }));
-      localStorage.setItem('commentNotifications', String(newState)); // ✅ Instant UI update
+    const newState = !appSettings.commentNotifications;
+    setAppSettings((prev: typeof settings) => ({
+      ...prev,
+      commentNotifications: newState,
+    }));
+    localStorage.setItem('commentNotifications', String(newState));
 
-      await updateCommentNotifications(userData.id, newState);
-      console.log('✅ Comment Notifications updated in WinReg:', newState);
-    } catch (error) {
-      console.error('❌ Failed to update Comment Notifications:', error);
-    }
+    await updateCommentNotifications(userData.id, newState);
   };
+
   const handleAdminUsernameChange = async (newUsername: string) => {
-    try {
-      await updateAdminUsername(newUsername);
-      setAppSettings((prev: typeof appSettings) => ({
-        ...prev,
-        adminUsername: newUsername,
-      })); // ✅ Update State
-      console.log('✅ Admin Username updated:', newUsername);
-    } catch (error) {
-      console.error('❌ Failed to update Admin Username:', error);
-    }
+    await updateAdminUsername(newUsername);
+    setAppSettings((prev: typeof appSettings) => ({
+      ...prev,
+      adminUsername: newUsername,
+    }));
   };
 
   const handleMaxUploadSizeChange = async (size: string) => {
-    try {
-      await updateMaxUploadSize(size);
-      setAppSettings((prev: typeof settings) => ({
-        ...prev,
-        maxUploadSize: size,
-      })); // ✅ Update State
-      console.log('✅ Max Upload Size updated:', size);
-    } catch (error) {
-      console.error('❌ Failed to update Max Upload Size:', error);
-    }
+    await updateMaxUploadSize(size);
+    setAppSettings((prev: typeof settings) => ({
+      ...prev,
+      maxUploadSize: size,
+    }));
   };
 
   const handleTokenExpirationChange = async (time: string) => {
-    try {
-      await updateTokenExpirationTime(time);
-      setAppSettings((prev: typeof settings) => ({
-        ...prev,
-        tokenExpirationTime: time,
-      })); // ✅ Update State
-      console.log('✅ Token Expiration Time updated:', time);
-    } catch (error) {
-      console.error('❌ Failed to update Token Expiration Time:', error);
-    }
+    await updateTokenExpirationTime(time);
+    setAppSettings((prev: typeof settings) => ({
+      ...prev,
+      tokenExpirationTime: time,
+    }));
   };
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
@@ -341,7 +256,6 @@ export const Settings = (): JSX.Element => {
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      console.error('❌ Error changing password:', error);
       alert(t('Failed to change password. Please try again.'));
     }
   };
@@ -389,8 +303,8 @@ export const Settings = (): JSX.Element => {
                   alignItems="center"
                   justifyContent="center"
                   overflow="hidden"
-                  cursor={userData.id ? 'pointer' : 'not-allowed'} // ❌ Prevents upload if no userId
-                  opacity={userData.id ? 1 : 0.5} // ❌ Grays out if userData isn't ready
+                  cursor={userData.id ? 'pointer' : 'not-allowed'}
+                  opacity={userData.id ? 1 : 0.5}
                   onClick={() =>
                     userData.id &&
                     document.getElementById('fileUpload')?.click()
@@ -418,7 +332,7 @@ export const Settings = (): JSX.Element => {
                   accept="image/*"
                   onChange={handleImageUpload}
                   hidden
-                  disabled={!userData.id} // ❌ Prevents clicking if userId is missing
+                  disabled={!userData.id}
                 />
               </Flex>
               <Stack spacing={6}>
@@ -432,7 +346,7 @@ export const Settings = (): JSX.Element => {
                       <Text fontWeight="bold">{label}:</Text>
                       <Input
                         name={key}
-                        value={String(userData[key as keyof User] ?? '')} // ✅ Ensures value is always a string
+                        value={String(userData[key as keyof User] ?? '')}
                         onChange={(e) =>
                           setUserData({
                             ...userData,
@@ -461,7 +375,7 @@ export const Settings = (): JSX.Element => {
                           key as keyof User,
                           String(userData[key as keyof User] ?? ''),
                         )
-                      } // ✅ Ensures safe type conversion
+                      }
                     />
                   </Flex>
                 ))}
@@ -511,25 +425,11 @@ export const Settings = (): JSX.Element => {
                     onChange={handleToggleCommentNotifications}
                   />
                 </Flex>
-
-                <Flex align="center" justify="space-between">
-                  <Text>{t('refreshRate')}</Text>
-                  <Select
-                    w={'150px'}
-                    value={appSettings.notificationRefreshRate}
-                    onChange={(e) => handleRefreshRateChange(e.target.value)}
-                  >
-                    <option value="10s">10s</option>
-                    <option value="30s">30s</option>
-                    <option value="1min">1 min</option>
-                  </Select>
-                </Flex>
               </Stack>
             </Box>
           )}
           {selectedCategory === 'security' && (
             <Box>
-              {/* Change Password Form */}
               <Box>
                 <Text fontWeight="bold">{t('currentPass')}:</Text>
                 <Input
@@ -582,11 +482,10 @@ export const Settings = (): JSX.Element => {
                   key={user.id}
                   align="center"
                   justify="space-between"
-                  p={4} // Padding for more spacing
+                  p={4}
                   borderBottom="1px solid gray"
-                  gap={4} // Adds space between items inside each row
+                  gap={4}
                 >
-                  {/* Avatar + Username */}
                   <Flex align="center" gap={4}>
                     <Avatar
                       size="md"
@@ -605,7 +504,6 @@ export const Settings = (): JSX.Element => {
                     <Text fontSize="md">{user.username}</Text>
                   </Flex>
 
-                  {/* Role Selection Dropdown - Pushed to the Right */}
                   <Select
                     value={user.role}
                     onChange={(e) =>
@@ -623,14 +521,13 @@ export const Settings = (): JSX.Element => {
                     <option value="ADMIN">Admin</option>
                   </Select>
 
-                  {/* Delete User Button */}
                   <IconButton
                     aria-label="Delete User"
                     icon={<DeleteIcon />}
                     colorScheme="red"
                     size="md"
-                    ml={2} // Adds spacing so it doesn’t stick to the dropdown
-                    onClick={() => handleDeleteUser(user.id)} // ✅ Pass user.id
+                    ml={2}
+                    onClick={() => handleDeleteUser(user.id)}
                   />
                 </Flex>
               ))}
@@ -642,7 +539,6 @@ export const Settings = (): JSX.Element => {
                 {t('adminSettings')}
               </Heading>
 
-              {/* ✅ Admin Username */}
               <Flex align="center" mb={4}>
                 <Text fontWeight="bold" flex="1">
                   {t('adminUsername')}
@@ -663,7 +559,6 @@ export const Settings = (): JSX.Element => {
                 />
               </Flex>
 
-              {/* ✅ Max Upload Size */}
               <Flex align="center" mb={4}>
                 <Text fontWeight="bold" flex="1">
                   {t('uploadSize')}
@@ -679,7 +574,6 @@ export const Settings = (): JSX.Element => {
                 </Select>
               </Flex>
 
-              {/* ✅ Token Expiration Time */}
               <Flex align="center">
                 <Text fontWeight="bold" flex="1">
                   {t('tokenTime')}

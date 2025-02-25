@@ -5,15 +5,10 @@ export const sendMessage = async (
   receiverId: number,
   message: string,
 ) => {
-  try {
-    const response = await api.post('/messages', {
-      senderId,
-      receiverId,
-      message,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Failed to send message:', error); // Debug log
-    throw error;
-  }
+  const response = await api.post('/messages', {
+    senderId,
+    receiverId,
+    message,
+  });
+  return response.data;
 };

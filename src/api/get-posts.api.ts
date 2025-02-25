@@ -4,9 +4,9 @@ export interface ApiPost {
   id: number;
   title: string;
   description: string;
-  images?: Image[]; // ✅ Optional to avoid "undefined" errors
-  profileImage?: string; // ✅ Now directly part of the post
-  username: string; // ✅ Now directly part of the post
+  images?: Image[];
+  profileImage?: string;
+  username: string;
   commentCount: number;
   likedByCurrentUser: boolean;
   likeCount: number;
@@ -19,6 +19,5 @@ interface Image {
 
 export const getPosts = async (): Promise<ApiPost[]> => {
   const { data } = await api.get('/posts');
-  console.log('📥 Fetched Posts:', data);
   return data;
 };

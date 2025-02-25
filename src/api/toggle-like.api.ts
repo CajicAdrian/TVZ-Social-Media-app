@@ -5,8 +5,8 @@ export const toggleLike = async (
   like: boolean,
 ): Promise<void> => {
   if (like) {
-    await api.post(`/likes/post/${postId}`); // ✅ Correct path
+    await api.post(`/likes/post/${postId}`);
   } else {
-    await api.delete(`/likes/posts/${postId}`); // ✅ Correct path
+    await api.delete(`/likes/posts/${postId}`);
   }
 };

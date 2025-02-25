@@ -28,10 +28,10 @@ export const Chat = ({ userId }: { userId: number }) => {
   const [messages, setMessages] = useState<ApiMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
 
-  const bgColor = useColorModeValue('gray.100', 'gray.900'); // Chat background
-  const textColor = useColorModeValue('black', 'white'); // Message section background
-  const bubbleBg = useColorModeValue('blue.100', 'blue.800'); // Chat bubbles
-  const bubbleBg2 = useColorModeValue('gray.100', 'gray.800'); // Chat bubbles
+  const bgColor = useColorModeValue('gray.100', 'gray.900');
+  const textColor = useColorModeValue('black', 'white');
+  const bubbleBg = useColorModeValue('blue.100', 'blue.800');
+  const bubbleBg2 = useColorModeValue('gray.100', 'gray.800');
 
   const chatRef = React.useRef(null);
 
@@ -50,12 +50,8 @@ export const Chat = ({ userId }: { userId: number }) => {
   useEffect(() => {
     if (isOpen && !currentUser) {
       const fetchUsers = async () => {
-        try {
-          const userList = await getAllUsersExceptMe();
-          setUsers(userList);
-        } catch (error) {
-          console.error('Failed to fetch users:', error);
-        }
+        const userList = await getAllUsersExceptMe();
+        setUsers(userList);
       };
       fetchUsers();
     }
@@ -63,35 +59,23 @@ export const Chat = ({ userId }: { userId: number }) => {
 
   const handleUserClick = async (selectedUser: ApiUser) => {
     setCurrentUser(selectedUser);
-    try {
-      const conversationMessages = await getMessages(userId, selectedUser.id);
-      setMessages(conversationMessages);
-    } catch (error) {
-      console.error('Failed to fetch messages:', error);
-    }
+    const conversationMessages = await getMessages(userId, selectedUser.id);
+    setMessages(conversationMessages);
   };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !currentUser) return;
 
-    try {
-      const newMsg = await sendMessage(userId, currentUser.id, newMessage);
-      setMessages((prev) => [...prev, newMsg]);
-      setNewMessage('');
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    }
+    const newMsg = await sendMessage(userId, currentUser.id, newMessage);
+    setMessages((prev) => [...prev, newMsg]);
+    setNewMessage('');
   };
 
   useEffect(() => {
     if (currentUser) {
       const interval = setInterval(async () => {
-        try {
-          const updatedMessages = await getMessages(userId, currentUser.id);
-          setMessages(updatedMessages);
-        } catch (error) {
-          console.error('Failed to refresh messages:', error);
-        }
+        const updatedMessages = await getMessages(userId, currentUser.id);
+        setMessages(updatedMessages);
       }, 5000);
       return () => clearInterval(interval);
     }
@@ -177,8 +161,8 @@ export const Chat = ({ userId }: { userId: number }) => {
                       m={2}
                       maxW="70%"
                       wordBreak="break-word"
-                      mr={msg.senderId === userId ? '10px' : 'auto'} // Margin to the right for sender
-                      ml={msg.senderId !== userId ? '10px' : 'auto'} // Margin to the left for receiver
+                      mr={msg.senderId === userId ? '10px' : 'auto'}
+                      ml={msg.senderId !== userId ? '10px' : 'auto'}
                     >
                       <Text>{msg.message}</Text>
                     </Box>

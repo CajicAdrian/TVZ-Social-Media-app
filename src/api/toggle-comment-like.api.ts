@@ -5,8 +5,8 @@ export const toggleCommentLike = async (
   like: boolean,
 ): Promise<void> => {
   if (like) {
-    await api.post(`/likes/comments/${commentId}`); // ✅ Match LikesController
+    await api.post(`/likes/comments/${commentId}`);
   } else {
-    await api.delete(`/likes/comments/${commentId}`); // ✅ Match LikesController
+    await api.delete(`/likes/comments/${commentId}`);
   }
 };

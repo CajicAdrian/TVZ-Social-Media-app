@@ -1,7 +1,7 @@
 import { Box, Image, Text } from '@chakra-ui/react';
 import React, { ReactElement } from 'react';
 import { toggleLike } from 'api';
-import LikeIcon from '../images/Like.png'; // Import the heart image
+import LikeIcon from '../images/Like.png';
 
 interface Props {
   postId: number;
@@ -29,20 +29,18 @@ export const Likes = ({
       onClick={onLike}
       cursor="pointer"
     >
-      {/* Heart Image */}
       <Image
         src={LikeIcon}
         alt="Like"
         boxSize={20}
         style={{
           filter: likedByCurrentUser
-            ? 'invert(44%) sepia(93%) saturate(6536%) hue-rotate(10deg) brightness(80%) contrast(129%)' // Dark red
-            : 'invert(0%) brightness(0%)', // Black
-          transition: 'filter 0.3s ease', // Smooth transition
+            ? 'invert(44%) sepia(93%) saturate(6536%) hue-rotate(10deg) brightness(80%) contrast(129%)'
+            : 'invert(0%) brightness(0%)',
+          transition: 'filter 0.3s ease',
         }}
       />
 
-      {/* Like Count centered inside the heart */}
       <Text
         position="absolute"
         top="50%"

@@ -29,32 +29,31 @@ import {
 interface Props {
   postId: number;
   userId: number;
-  commentCount: number; // ✅ Include this to track total comments
+  commentCount: number;
   onChange: () => void;
-  onCommentCountChange: (count: number) => void; // ✅ Ensure this exists
+  onCommentCountChange: (count: number) => void;
 }
 
 export const CommentsModal = ({
   postId,
   userId,
   onChange,
-  onCommentCountChange, // ✅ Add this parameter
+  onCommentCountChange,
 }: Props) => {
   const { t } = useTranslation('feed');
   const [comments, setComments] = useState<ApiComment[]>([]);
   const [content, setContent] = useState('');
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState<string>('');
-  const textColor = useColorModeValue('black', 'white'); // Message section background
-  const bubbleBg = useColorModeValue('blue.100', 'blue.800'); // Chat bubbles
-  const bubbleBg2 = useColorModeValue('gray.100', 'gray.800'); // Chat bubbles
+  const textColor = useColorModeValue('black', 'white');
+  const bubbleBg = useColorModeValue('blue.100', 'blue.800');
+  const bubbleBg2 = useColorModeValue('gray.100', 'gray.800');
 
-  // ✅ Fetch comments and update state
   useEffect(() => {
     const fetchComments = async () => {
       const fetchedComments = await getComments(postId);
       setComments(fetchedComments);
-      onCommentCountChange(fetchedComments.length); // ✅ Ensure count updates
+      onCommentCountChange(fetchedComments.length);
     };
     fetchComments();
   }, [postId, onChange]);
@@ -68,7 +67,7 @@ export const CommentsModal = ({
     await createComment(postId, content);
     setContent('');
     onChange();
-    onCommentCountChange(comments.length + 1); // ✅ Increase count after adding
+    onCommentCountChange(comments.length + 1);
   };
 
   const startEditing = (commentId: number, commentText: string) => {
@@ -78,13 +77,13 @@ export const CommentsModal = ({
 
   const handleUpdate = async (commentId: number) => {
     if (!editContent.trim()) return;
-    await updateComment(postId, commentId, { content: editContent }); // ✅ Pass postId
+    await updateComment(postId, commentId, { content: editContent });
     setEditingCommentId(null);
     onChange();
   };
 
   const handleDelete = async (commentId: number) => {
-    await deleteComment(postId, commentId); // ✅ Pass postId
+    await deleteComment(postId, commentId);
     onChange();
   };
 
@@ -165,8 +164,8 @@ export const CommentsModal = ({
                           await toggleCommentLike(
                             comment.id,
                             !comment.isLikedByUser,
-                          ); // ✅ Toggle like state
-                          onChange(); // Refresh comments
+                          );
+                          onChange();
                         }}
                       />
                       <Text fontSize="sm" ml={2}>
@@ -184,7 +183,6 @@ export const CommentsModal = ({
 
       <Divider />
 
-      {/* ✅ New Comment Input */}
       <HStack mt="3">
         <Box flex="1 0 auto">
           <Textarea

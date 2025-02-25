@@ -13,11 +13,10 @@ import {
 } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components';
 import { signup, getCurrentUser } from 'api';
-import img from '../images/SignIn.png'; // Adjust the import path as necessary
+import img from '../images/SignIn.png';
 
 interface FormData {
   username: string;
@@ -37,24 +36,15 @@ export const Register = (): JSX.Element => {
       const result = await signup(data);
 
       if (result.status === 'success') {
-        console.log('🚀 Signup successful, fetching user data...');
-
-        // ✅ Fetch full user details
         const user = await getCurrentUser();
-        console.log('✅ Retrieved User Data:', user);
-
-        // ✅ Store session in AuthContext
         setAccessToken(result.accessToken);
         setUser(user);
 
-        // ✅ Store session in localStorage
         localStorage.setItem('accessToken', result.accessToken);
         localStorage.setItem('user', JSON.stringify(user));
 
-        // ❗ Wait for React to process AuthContext before navigating
         await new Promise((resolve) => setTimeout(resolve, 100));
 
-        console.log('✅ Redirecting to Feed...');
         navigate('/');
       } else {
         setErrors(result.messages);
@@ -65,21 +55,21 @@ export const Register = (): JSX.Element => {
   return (
     <Flex height="100vh" width="100vw">
       <Box
-        position="absolute" /* Detach the background from layout */
-        top="-20" /* Start at the top of the viewport */
-        left="0" /* Align to the left */
-        width="50vw" /* Cover only the left half of the viewport */
+        position="absolute"
+        top="-20"
+        left="0"
+        width="50vw"
         height="calc(100vh + 20px)"
-        bgImage={`url(${img})`} /* Background image */
+        bgImage={`url(${img})`}
         bgRepeat="no-repeat"
         bgSize="cover"
         bgPosition="center"
-        zIndex="-1" /* Keep it behind all content */
+        zIndex="-1"
       />
       <Flex
-        width="50%" /* Restrict the form to the right half */
-        height="100vh" /* Match the viewport height */
-        ml="auto" /* Push the form to the right */
+        width="50%"
+        height="100vh"
+        ml="auto"
         direction="column"
         justify="center"
         align="center"
@@ -89,14 +79,14 @@ export const Register = (): JSX.Element => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack
               align="start"
-              spacing={8} // Increased spacing between segments
+              spacing={8}
               width="100%"
               maxW="lg"
               marginX="auto"
             >
               <Heading
                 as="h2"
-                fontSize="2xl" // Adjust this as needed
+                fontSize="2xl"
                 mb={6}
                 fontFamily="'Karma', serif"
               >
@@ -104,10 +94,7 @@ export const Register = (): JSX.Element => {
               </Heading>
 
               <FormControl>
-                <FormLabel
-                  fontSize="md" // Adjust this as needed
-                  fontFamily="'Assistant', sans-serif"
-                >
+                <FormLabel fontSize="md" fontFamily="'Assistant', sans-serif">
                   {'Username'}:
                 </FormLabel>
                 <Input
@@ -118,15 +105,12 @@ export const Register = (): JSX.Element => {
                   borderRadius={'0'}
                   placeholder={'Enter your username'}
                   fontFamily="'Assistant', sans-serif"
-                  fontSize="md" // Adjust this as needed
+                  fontSize="md"
                 />
               </FormControl>
 
               <FormControl>
-                <FormLabel
-                  fontSize="md"
-                  fontFamily="'Assistant', sans-serif" // Apply Assistant font
-                >
+                <FormLabel fontSize="md" fontFamily="'Assistant', sans-serif">
                   {'Password'}:
                 </FormLabel>
                 <Input
@@ -136,8 +120,8 @@ export const Register = (): JSX.Element => {
                   borderBottom="1px solid black"
                   borderRadius={'0'}
                   placeholder={'Enter your password'}
-                  fontFamily="'Assistant', sans-serif" // Apply Assistant font to input
-                  fontSize="md" // Adjust this as needed
+                  fontFamily="'Assistant', sans-serif"
+                  fontSize="md"
                 />
               </FormControl>
               <Button
@@ -149,25 +133,23 @@ export const Register = (): JSX.Element => {
               >
                 {'Sign Up'}
               </Button>
-              {Array.isArray(errors) &&
-                errors.length > 0 && ( // Ensure errors is an array
-                  <Text color="red.500">
-                    {errors.map((error, index) => (
-                      <div key={index}>{error}</div>
-                    ))}
-                  </Text>
-                )}
+              {Array.isArray(errors) && errors.length > 0 && (
+                <Text color="red.500">
+                  {errors.map((error, index) => (
+                    <div key={index}>{error}</div>
+                  ))}
+                </Text>
+              )}
               <Text
                 align="center"
                 width="150px"
                 fontSize="sm"
                 mt={4}
                 fontFamily="'Assistant', sans-serif"
-                color="#97C0E4" // Match the color of the sign-in button
+                color="#97C0E4"
               >
                 <RouterLink to="/login" style={{ color: '#97C0E4' }}>
                   {' '}
-                  {/* Link to /register */}
                   {'Already have an account?'}
                 </RouterLink>
               </Text>

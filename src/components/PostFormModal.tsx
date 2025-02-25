@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControl,
   FormLabel,
@@ -9,7 +8,6 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
-  Stack,
   Textarea,
   VStack,
   useColorModeValue,
@@ -18,7 +16,7 @@ import {
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { FaPaperPlane, FaTrash, FaQuoteLeft } from 'react-icons/fa';
+import { FaPaperPlane, FaTrash } from 'react-icons/fa';
 import { getQuoteOfTheDay } from 'api';
 
 interface FormData {
@@ -53,24 +51,20 @@ export const PostFormModal = ({
   const textColor = useColorModeValue('black', 'white');
   const [quote, setQuote] = useState<string | null>(null);
 
-  // ✅ Fetch the quote when modal opens
   useEffect(() => {
     if (isOpen) {
       getQuoteOfTheDay().then(setQuote);
     }
   }, [isOpen]);
 
-  // ✅ Function to insert the quote into the description
   const handleInsertQuote = async () => {
     let selectedQuote = quote;
 
-    // If no quote exists yet, fetch one
     if (!selectedQuote) {
       selectedQuote = await getQuoteOfTheDay();
       setQuote(selectedQuote);
     }
 
-    // Append the quote to the description field
     const currentDescription = getValues('description') || '';
     setValue('description', `${currentDescription}\n${selectedQuote}`);
   };
@@ -114,12 +108,11 @@ export const PostFormModal = ({
                 />
               </FormControl>
 
-              {/* ✅ Insert Quote Button */}
               <Button
                 colorScheme="gray"
                 variant="outline"
                 size="sm"
-                onClick={handleInsertQuote} // ✅ Handles inserting or fetching a quote
+                onClick={handleInsertQuote}
                 alignSelf="flex-start"
               >
                 {t('quoteOfTheDay')}

@@ -1,7 +1,5 @@
 import React from 'react';
-import { Box, Heading, Container, Text, Button, Stack } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Box, Heading, Container, Text, Stack } from '@chakra-ui/react';
 import img from '../images/Home.jpeg';
 
 export const Home = (): JSX.Element => {
@@ -13,7 +11,7 @@ export const Home = (): JSX.Element => {
         left="0"
         width="100%"
         height="calc(100vh + 20px)"
-        maxW="100vw" /* Force maximum width to the viewport */
+        maxW="100vw"
         zIndex="-1"
         bgImage={`url(${img})`}
         bgRepeat="no-repeat"

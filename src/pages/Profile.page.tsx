@@ -44,22 +44,15 @@ export const Profile = (): JSX.Element => {
 
   const textColor = useColorModeValue('black', 'white'); // Text color
 
-  // ✅ Fetch user on mount
   useEffect(() => {
     const fetchUser = async () => {
-      try {
-        const fetchedUser = await getCurrentUser(); // ✅ Fetch from API
-        setUser(fetchedUser);
-      } catch (err) {
-        console.error('❌ Failed to fetch user:', err);
-        setError('Failed to load user profile');
-      }
+      const fetchedUser = await getCurrentUser(); // ✅ Fetch from API
+      setUser(fetchedUser);
     };
 
     fetchUser();
   }, []);
 
-  // ✅ Fetch posts only when user is available
   const {
     loading,
     value: posts = [],
@@ -74,7 +67,7 @@ export const Profile = (): JSX.Element => {
       setError('Failed to fetch posts');
       throw err;
     }
-  }, [user?.id]); // ✅ Dependency added to re-fetch if user ID changes
+  }, [user?.id]);
 
   useEffect(() => {
     if (edit) {
@@ -110,10 +103,8 @@ export const Profile = (): JSX.Element => {
     <Layout
       leftContent={
         <Center flexDirection="column">
-          {/* ✅ Ensure `user` is loaded before rendering */}
           {user ? (
             <>
-              {/* ✅ Profile Image / Avatar */}
               <Avatar
                 size="2xl"
                 name={user.username}
@@ -126,15 +117,13 @@ export const Profile = (): JSX.Element => {
                     : undefined
                 }
                 bg="lightblue"
-                mb={4} // Spacing below the avatar
+                mb={4}
               />
 
-              {/* ✅ Username */}
               <Text color={textColor} fontSize="2xl" fontWeight="bold">
                 {user.username}
               </Text>
 
-              {/* ✅ Bio */}
               <Text fontSize="md" color={textColor} mt={2}>
                 {user.bio || 'No bio available'}
               </Text>
@@ -155,7 +144,6 @@ export const Profile = (): JSX.Element => {
           {!loading && !error && posts.length === 0 && (
             <Text alignSelf="center">No posts available</Text>
           )}
-          {/* Post Form Modal */}
           {edit && (
             <PostFormModal
               mode={edit.mode}
@@ -182,7 +170,7 @@ export const Profile = (): JSX.Element => {
                       fileName: '',
                     }
                   }
-                  profileImage={post.profileImage} // ✅ No more TS error
+                  profileImage={post.profileImage}
                   username={post.username}
                   commentCount={post.commentCount}
                   likeCount={post.likeCount}
@@ -190,7 +178,7 @@ export const Profile = (): JSX.Element => {
                   onChange={retry}
                   onEdit={() =>
                     setEdit({ mode: 'edit', postId: post.id, data: post })
-                  } // ✅ This enables the Edit button
+                  }
                 />
               ))}
             </VStack>

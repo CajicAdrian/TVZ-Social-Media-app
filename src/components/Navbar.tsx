@@ -28,14 +28,9 @@ export const Navbar = (): JSX.Element => {
     profileImage?: string;
   } | null>(null);
 
-  // ✅ Function to fetch user data
   const fetchUser = useCallback(async () => {
-    try {
-      const fetchedUser = await getCurrentUser();
-      setUser(fetchedUser);
-    } catch (err) {
-      console.error('❌ Failed to fetch user:', err);
-    }
+    const fetchedUser = await getCurrentUser();
+    setUser(fetchedUser);
   }, []);
 
   useEffect(() => {
@@ -44,10 +39,9 @@ export const Navbar = (): JSX.Element => {
     }
   }, [accessToken, fetchUser]);
 
-  // ✅ Listen for profile image updates (triggered from the settings page)
   useEffect(() => {
     const handleProfileUpdate = () => {
-      fetchUser(); // ✅ Re-fetch user data when profile updates
+      fetchUser();
     };
 
     window.addEventListener('profileUpdated', handleProfileUpdate);
@@ -60,7 +54,6 @@ export const Navbar = (): JSX.Element => {
     const storedTheme = localStorage.getItem('theme');
 
     if (storedTheme && storedTheme !== colorMode) {
-      console.log(`🎨 Restoring stored theme: ${storedTheme}`);
       setColorMode(storedTheme);
     }
   }, []);
@@ -109,25 +102,15 @@ export const Navbar = (): JSX.Element => {
           >
             <Notifications />
 
-            {/* ✅ DARK MODE BUTTON */}
             <Button
               onClick={async () => {
                 const newMode = colorMode === 'dark' ? 'light' : 'dark';
 
-                console.log(
-                  `🎨 Navbar Dark Mode Toggle: ${newMode} (Before Toggle)`,
-                );
-
-                // ✅ Toggle UI instantly
                 toggleColorMode();
 
-                // ✅ Save in WinReg (persist across logins)
                 if (user) {
                   await updateUserTheme(user.id, newMode);
-                  console.log(`✅ Saved theme to WinReg: ${newMode}`);
                 }
-
-                console.log(`🌙 Theme After Toggle: ${newMode}`);
               }}
               variant="ghost"
             >
@@ -137,8 +120,6 @@ export const Navbar = (): JSX.Element => {
                 <Icon as={MdLightMode} w={6} h={6} />
               )}
             </Button>
-
-            {/* ✅ USER AVATAR FROM getCurrentUser(), AUTO-UPDATES */}
             <Box
               as={RouterLink}
               to="/profile"

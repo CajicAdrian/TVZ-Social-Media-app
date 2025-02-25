@@ -9,13 +9,10 @@ export const LogoutButton = (): ReactElement => {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const logout = () => {
-    console.log('🚪 Logging out...');
-
-    i18n.changeLanguage('en');
-
     localStorage.clear();
     sessionStorage.clear();
 
+    i18n.changeLanguage('en');
     if (colorMode === 'dark') toggleColorMode();
 
     navigate('/');

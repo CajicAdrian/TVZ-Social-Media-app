@@ -4,7 +4,7 @@ import { Chat, Post, PostFormModal } from 'components';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
-import { Layout } from '../components/Layout'; // Import the reusable Layout component
+import { Layout } from '../components/Layout';
 import { AuthContext } from '../components/AuthContext';
 import { Navigate } from 'react-router-dom';
 
@@ -26,10 +26,7 @@ export const Feed = (): JSX.Element => {
   const { loading, value = [], retry } = useAsyncRetry(getPosts);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  console.log('📢 Feed Rendering - User:', user);
-
   if (!user) {
-    console.warn('🚨 No user in Feed, redirecting to Home');
     return <Navigate to="/" />;
   }
 
@@ -53,7 +50,6 @@ export const Feed = (): JSX.Element => {
   const onSubmit = async (data: FormData) => {
     if (edit?.mode === 'create') {
       if (!data.title || !data.description || !data.image) {
-        console.warn('Missing mandatory fields to create');
         return;
       }
 
@@ -91,14 +87,12 @@ export const Feed = (): JSX.Element => {
       leftContent={<Box>{user?.id && <Chat userId={user.id} />}</Box>}
       rightContent={
         <VStack spacing={6} align="stretch" w="100%">
-          {/* Center the Create New Post Button */}
           <Box display="flex" justifyContent="center">
             <Button onClick={openCreateModal} colorScheme="blue">
               {t('create_new_post')}
             </Button>
           </Box>
 
-          {/* Post Form Modal */}
           {edit && (
             <PostFormModal
               mode={edit.mode}
@@ -110,7 +104,6 @@ export const Feed = (): JSX.Element => {
             />
           )}
 
-          {/* Display Posts */}
           {loading ? (
             <Spinner alignSelf="center" />
           ) : (
@@ -129,7 +122,7 @@ export const Feed = (): JSX.Element => {
                       fileName: '',
                     }
                   }
-                  profileImage={post.profileImage} // ✅ Pass profileImage here
+                  profileImage={post.profileImage}
                   username={post.username}
                   commentCount={post.commentCount}
                   likeCount={post.likeCount}
@@ -137,7 +130,7 @@ export const Feed = (): JSX.Element => {
                   onChange={retry}
                   onEdit={() =>
                     setEdit({ mode: 'edit', postId: post.id, data: post })
-                  } // ✅ This enables the Edit button
+                  }
                 />
               ))}
             </VStack>

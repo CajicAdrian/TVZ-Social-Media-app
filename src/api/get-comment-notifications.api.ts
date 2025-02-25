@@ -1,6 +1,5 @@
 import { api } from './api';
 
-// ✅ Get Comment Notification Setting
 export const getCommentNotifications = async (
   userId: number,
 ): Promise<boolean> => {

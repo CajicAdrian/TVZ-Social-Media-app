@@ -1,6 +1,5 @@
 import { api } from './api';
 
-// ✅ Toggle Comment Notification Setting
 export const updateCommentNotifications = async (
   userId: number,
   enabled: boolean,

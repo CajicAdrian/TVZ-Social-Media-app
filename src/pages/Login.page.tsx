@@ -34,15 +34,8 @@ export const Login = (): JSX.Element => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState<string[]>([]);
 
-  console.log('🔍 Inside Login.tsx - Current AuthContext:', {
-    setAccessToken,
-    setUser,
-  });
   const onSubmit = async (data: FormData) => {
     if (!setAccessToken || !setUser) {
-      console.error(
-        '❌ AuthContext is missing. Ensure <AuthProvider> is wrapping <Login />.',
-      );
       return;
     }
 
@@ -51,29 +44,19 @@ export const Login = (): JSX.Element => {
       if (!accessToken || !user)
         throw new Error('❌ Login failed: Missing accessToken or user');
 
-      console.log('🚀 Setting user & token in AuthContext:', {
-        accessToken,
-        user,
-      });
-
       setAccessToken(accessToken);
       setUser(user);
 
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('user', JSON.stringify(user));
 
-      // ✅ Fetch and apply ALL user settings immediately after login
       const settings = await getWinSettings(user.id);
-      console.log('⚙️ Applying user settings:', settings);
 
-      // ✅ Apply Language
       i18n.changeLanguage(settings.language);
 
-      // ✅ Apply Dark Mode
       if (settings.darkMode && colorMode !== 'dark') toggleColorMode();
       if (!settings.darkMode && colorMode !== 'light') toggleColorMode();
 
-      // ✅ Apply Notification Settings
       localStorage.setItem(
         'likeNotifications',
         String(settings.likeNotifications),
@@ -92,14 +75,12 @@ export const Login = (): JSX.Element => {
         navigate('/');
       }, 300);
     } catch (error: any) {
-      console.error('❌ Login failed:', error);
       setErrors(['Login failed. Please try again.']);
     }
   };
 
   return (
     <Flex height="100vh" width="100vw">
-      {/* Left Image Section */}
       <Box
         position="absolute"
         top="-20"
@@ -113,7 +94,6 @@ export const Login = (): JSX.Element => {
         zIndex="-1"
       />
 
-      {/* Right Form Section */}
       <Flex
         width="50%"
         height="100vh"
@@ -190,7 +170,6 @@ export const Login = (): JSX.Element => {
                 </Text>
               )}
 
-              {/* Don't have an account link */}
               <Text
                 align="center"
                 width="150px"

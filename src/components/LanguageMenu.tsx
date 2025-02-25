@@ -25,7 +25,6 @@ export const LanguageMenu = ({ userId }: { userId: number }): ReactElement => {
 
   useEffect(() => {
     if (userId) {
-      // ✅ Only apply if user is logged in
       getUserLanguage(userId).then((savedLang) => {
         setLang(savedLang);
         i18n.changeLanguage(savedLang);
@@ -46,7 +45,7 @@ export const LanguageMenu = ({ userId }: { userId: number }): ReactElement => {
     [i18n, userId],
   );
 
-  if (lang === null) return <p>Loading...</p>; // ✅ Prevents flashing English
+  if (lang === null) return <p>Loading...</p>;
 
   return (
     <Menu closeOnSelect={true}>
